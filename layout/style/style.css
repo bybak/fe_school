@@ -1,8 +1,7 @@
 body {
-    background-color: #222222;
-    color: #ffffff;
+    background: linear-gradient(0deg, #fdfcfb, #e2d1c3) fixed;
+    /*background-image: linear-gradient(to top, #6a85b6 0%, #bac8e0 100%);*/
 }
-
 .sortSelect {
     font-family: 'FontAwesome', 'Second Font name'
 }
