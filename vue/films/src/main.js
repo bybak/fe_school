@@ -11,15 +11,12 @@ Vue.config.productionTip = false;
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
-import page1 from './components/Page1';
-import page2 from './components/Page2';
-
-const Foo = page1;
-const Bar = page2;
+import films from './components/Films.vue';
+import helloWorld from './components/HelloWorld.vue';
 
 const routes = [
-    { path: '/foo', component: Foo },
-    { path: '/bar', component: Bar }
+    { path: '/', component: helloWorld },
+    { path: '/films', component: films },
 ];
 
 const router = new VueRouter({
