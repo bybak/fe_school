@@ -9,7 +9,6 @@
 
         <b-navbar-nav>
           <b-nav-item to="/films">Films</b-nav-item>
-          <b-nav-item href="#" disabled>Disabled</b-nav-item>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">

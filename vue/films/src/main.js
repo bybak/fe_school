@@ -12,11 +12,13 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
 import films from './components/Films.vue';
-import helloWorld from './components/HelloWorld.vue';
+import welcome from './components/Welcome.vue';
+import oneFilm from './components/OneFilm.vue';
 
 const routes = [
-    { path: '/', component: helloWorld },
+    { path: '/', component: welcome },
     { path: '/films', component: films },
+    { path: '/film', component: oneFilm}
 ];
 
 const router = new VueRouter({
