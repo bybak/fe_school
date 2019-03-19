@@ -33,7 +33,7 @@
       </b-col>
     </b-form-row>
 
-    <b-form-row class="mt-5">
+    <b-form-row class="mt-3">
       <b-col lg="9">
         <h2>Comments</h2>
 

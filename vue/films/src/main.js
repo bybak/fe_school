@@ -14,11 +14,13 @@ Vue.use(VueRouter);
 import films from './components/Films.vue';
 import welcome from './components/Welcome.vue';
 import oneFilm from './components/OneFilm.vue';
+import profile from './components/Profile.vue';
 
 const routes = [
     { path: '/', component: welcome },
     { path: '/films', component: films },
-    { path: '/film', component: oneFilm}
+    { path: '/film', component: oneFilm },
+    { path: '/profile', component: profile }
 ];
 
 const router = new VueRouter({

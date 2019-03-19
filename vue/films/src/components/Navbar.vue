@@ -12,17 +12,34 @@
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">
-          <b-button variant="light" size="sm">Login</b-button>
+
+            <b-dropdown variant="light" no-caret>
+              <template slot="button-content"><i class="fas fa-user"></i> User</template>
+              <b-dropdown-item to="/profile">Profile</b-dropdown-item>
+              <b-dropdown-item >Logout</b-dropdown-item>
+            </b-dropdown>
+
+          <b-button variant="light" size="sm" @click="openModal" class="ml-2">Login</b-button>
         </b-navbar-nav>
 
       </b-collapse>
     </b-navbar>
+
+    <login ref="login"></login>
+
   </div>
 </template>
 
 <script>
+    import Login from "./Login";
 export default {
-  name: 'navbar'
+    components: {Login},
+    name: 'navbar',
+    methods: {
+        openModal() {
+            this.$refs.login.show();
+        }
+    }
 }
 </script>
 
