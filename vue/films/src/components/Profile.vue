@@ -1,7 +1,7 @@
 <template>
   <div id="profile">
 
-    <h1>Profile</h1>
+    <h2 class="text-light">Profile</h2>
 
     <b-form-row>
       <b-col lg="3">

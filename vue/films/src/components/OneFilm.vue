@@ -1,41 +1,48 @@
 <template>
   <div id="oneFilm">
 
-    <h1>Movie collection of User</h1>
+    <h1 class="text-light">Movie collection of User</h1>
 
-    <b-form-row>
-      <b-col lg="3">
+    <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light">
+      <b-row no-gutters>
+        <b-col md="2">
+          <!--<b-card-img src="../../pictures/pic/1.jpg" class="rounded-0" />-->
+          <img src="../../pictures/pic/1.jpg" class="card-img" alt="Card image">
+        </b-col>
+        <b-col md="10">
+          <b-card-body>
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="m-0">Back to the Future</h4>
+              <b-button size="sm" variant="primary" v-b-tooltip.hover title="Copy to my collection"><i class="fas fa-copy"></i></b-button>
+            </div>
+            <b-card-text>
 
-        <div>
-          <b-card
-                  no-body
-          >
-            <img src="../../pictures/pic/1.jpg" class="card-img-top" alt="Card image">
+              <hr class="mt-2 mb-2">
+              <div v-for="item in items">
+                <b-form-row>
+                  <b-col lg="2">
+                    <span>{{item.field}}</span>
+                  </b-col>
+                  <b-col lg="10">
+                    <span>{{item.value}}</span>
+                  </b-col>
+                </b-form-row>
+                <hr class="mt-2 mb-2">
+              </div>
+            </b-card-text>
 
-            <b-card-body>
-              <a href="#">Copy to my collection</a>
-            </b-card-body>
+            <b-card-text>
+              Marty McFly, a 17-year-old high school student, is accidentally sent thirty years into the past in a time-traveling DeLorean invented by his close friend, the maverick scientist Doc Brown.
+            </b-card-text>
 
-          </b-card>
-        </div>
+          </b-card-body>
+        </b-col>
+      </b-row>
+    </b-card>
 
-      </b-col>
-      <b-col lg="9">
-        <h2>Back to the Future</h2>
-
-        <b-list-group flush>
-          <b-list-group-item v-for="item in items" class="d-flex justify-content-between align-items-center">
-            <span>{{item.field}}</span>
-            <span>{{item.value}}</span>
-          </b-list-group-item>
-        </b-list-group>
-
-      </b-col>
-    </b-form-row>
-
-    <b-form-row class="mt-3">
-      <b-col lg="9">
-        <h2>Comments</h2>
+    <b-card no-body class="overflow-hidden mt-3" bg-variant="dark" text-variant="light">
+      <b-card-body>
+        <h4>Comments</h4>
 
         <b-form-textarea
                 id="textarea"
@@ -43,33 +50,39 @@
                 placeholder="Enter something..."
                 rows="3"
                 max-rows="6"
+                size="sm"
         />
-        <b-button variant="outline-primary" class="mt-2">Publish</b-button>
+        <b-button size="sm" variant="primary" class="mt-2">Publish</b-button>
 
-        <hr>
+        <hr class="bg-secondary">
 
-        <b-card
-                no-body
-        >
+        <div class="d-flex justify-content-between">
+          <i class="fas fa-user fa-3x mr-4"></i>
+          <div>
+            <span class="font-weight-bold">User, 01.01.2019</span>
+            <hr class="mt-2 mb-2">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at sagittis enim. Sed maximus, justo a dapibus rhoncus, tellus velit ullamcorper metus, sit amet imperdiet metus libero sit amet nisl. Etiam quis lectus sed nisl interdum suscipit. Pellentesque auctor sodales leo, sed ultrices mi. Donec maximus interdum nibh, non iaculis tellus bibendum in. Integer ultricies mi ut erat vulputate, in rutrum felis sodales. Pellentesque cursus feugiat sapien, id condimentum orci faucibus et. Cras rhoncus elit velit, quis euismod lectus scelerisque in. Aenean vel metus a lectus sagittis cursus sed ac massa.
+            </p>
+          </div>
+        </div>
 
-          <b-card-body>
-            <b-form-row>
-              <b-col lg="2" class="text-center">
-                <i class="fas fa-user fa-3x"></i>
-              </b-col>
-              <b-col lg="10">
-                <span>User, 01.01.2019</span>
-                <hr>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at sagittis enim. Sed maximus, justo a dapibus rhoncus, tellus velit ullamcorper metus, sit amet imperdiet metus libero sit amet nisl. Etiam quis lectus sed nisl interdum suscipit. Pellentesque auctor sodales leo, sed ultrices mi. Donec maximus interdum nibh, non iaculis tellus bibendum in. Integer ultricies mi ut erat vulputate, in rutrum felis sodales. Pellentesque cursus feugiat sapien, id condimentum orci faucibus et. Cras rhoncus elit velit, quis euismod lectus scelerisque in. Aenean vel metus a lectus sagittis cursus sed ac massa.
-                </p>
-              </b-col>
-            </b-form-row>
-          </b-card-body>
+        <hr class="bg-secondary">
 
-        </b-card>
-      </b-col>
-    </b-form-row>
+        <div class="d-flex justify-content-between">
+          <i class="fas fa-user fa-3x mr-4"></i>
+          <div>
+            <span class="font-weight-bold">User, 01.01.2019</span>
+            <hr class="mt-2 mb-2">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at sagittis enim. Sed maximus, justo a dapibus rhoncus, tellus velit ullamcorper metus, sit amet imperdiet metus libero sit amet nisl. Etiam quis lectus sed nisl interdum suscipit. Pellentesque auctor sodales leo, sed ultrices mi. Donec maximus interdum nibh, non iaculis tellus bibendum in. Integer ultricies mi ut erat vulputate, in rutrum felis sodales. Pellentesque cursus feugiat sapien, id condimentum orci faucibus et. Cras rhoncus elit velit, quis euismod lectus scelerisque in. Aenean vel metus a lectus sagittis cursus sed ac massa.
+            </p>
+          </div>
+        </div>
+
+
+      </b-card-body>
+    </b-card>
 
   </div>
 </template>

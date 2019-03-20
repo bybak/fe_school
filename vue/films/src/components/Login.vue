@@ -1,5 +1,14 @@
 <template>
-    <b-modal v-model="showModal" id="loginModal" :title="modalTitle">
+    <b-modal
+            v-model="showModal"
+            id="loginModal"
+            :title="modalTitle"
+
+            content-class="bg-dark text-light"
+
+            hide-footer
+            hide-header
+    >
 
       <div id="loginForm" v-if="showLogin">
         <label for="inputFormatter">Email</label>
@@ -66,7 +75,7 @@
 
       </div>
 
-      <div slot="modal-footer" class="w-100">
+      <div class="mt-3">
         <b-button v-if="showLogin" variant="outline-primary" @click="switchPanel()">Register</b-button>
         <b-button v-if="showRegister" variant="outline-primary" @click="switchPanel()">Login</b-button>
         <b-button v-if="showLogin" class="float-right" variant="primary">Login</b-button>

@@ -1,10 +1,12 @@
 <template>
   <div id="navbar">
-    <b-navbar variant="dark" type="dark">
+    <b-navbar toggleable="lg" variant="dark" type="dark" class="shadow">
       <b-navbar-brand href="#" to="/">
         <img src="../../pictures/logo.png" alt="logo" height="40"/>
         Movies
       </b-navbar-brand>
+
+      <b-navbar-toggle target="nav_collapse" />
       <b-collapse is-nav id="nav_collapse">
 
         <b-navbar-nav>
@@ -13,7 +15,7 @@
 
         <b-navbar-nav class="ml-auto">
 
-            <b-dropdown variant="light" no-caret>
+            <b-dropdown variant="light" no-caret size="sm">
               <template slot="button-content"><i class="fas fa-user"></i> User</template>
               <b-dropdown-item to="/profile">Profile</b-dropdown-item>
               <b-dropdown-item >Logout</b-dropdown-item>
