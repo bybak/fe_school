@@ -3,146 +3,144 @@
 
     <h2 class="text-light">Profile</h2>
 
-    <b-form-row>
-      <b-col lg="3">
+    <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light">
+      <b-row no-gutters>
+        <b-col md="2" class="avatarContainer">
+          <img src="../../pictures/pic/1.jpg" class="card-img" alt="Card image">
+          <b-button size="sm" v-b-tooltip.hover title="Change avatar" class="changeAvatarButton"><i class="fas fa-pencil-alt"></i></b-button>
+        </b-col>
+        <b-col md="10">
+          <b-card-body>
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="m-0">User name</h4>
+              <b-button size="sm" v-b-tooltip.hover title="Edit profile"><i class="fas fa-pencil-alt"></i></b-button>
+            </div>
+            <b-card-text>
+              <hr class="mt-2 mb-2">
+              Unique ID: 1234567890
+            </b-card-text>
 
-          <b-card class="text-center">
-            <i class="fas fa-user fa-5x"></i>
-
-            <br>
-            <a href="#">Change avatar</a>
-
-          </b-card>
-
-      </b-col>
-      <b-col lg="9">
-
-        <div>
-          <span class="font-weight-bold">Name: </span><span class="mr-2">User</span><i class="fas fa-pencil-alt"></i>
-        </div>
-        <div>
-          <span class="font-weight-bold">Unique ID: </span><span class="mr-2">1234567890</span>
-        </div>
-
-        <b-list-group flush>
-          <b-list-group-item v-for="item in items" class="d-flex justify-content-between align-items-center">
-            <span>{{item.field}}</span>
-            <span>{{item.value}}</span>
-          </b-list-group-item>
-        </b-list-group>
-
-      </b-col>
-    </b-form-row>
+          </b-card-body>
+        </b-col>
+      </b-row>
+    </b-card>
 
     <b-card class="mt-3" bg-variant="dark" text-variant="light">
 
       <b-form-row>
         <b-col lg="3" cols="12">
-          <b-button block variant="secondary" class="text-left">Friends</b-button>
-          <b-button block variant="secondary" class="d-flex justify-content-between align-items-center">Requests <b-badge variant="light">4</b-badge></b-button>
+          <b-button :pressed.sync="friendTab" @click="selectTab('friend')" block class="text-left">Friends</b-button>
+          <b-button :pressed.sync="requestTab" @click="selectTab('request')" block class="d-flex justify-content-between align-items-center">Requests <b-badge variant="light">4</b-badge></b-button>
         </b-col>
         <b-col lg="9" sm="12">
 
-          <b-form-row>
-            <b-col lg="1" cols="3">
-              <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 70px;">
-            </b-col>
-            <b-col lg="11" cols="9">
-              <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <div><span class="font-weight-bold">User Name</span></div>
-                  <div><span>From: 01.01.2019</span></div>
-                </div>
-                <b-button variant="danger" size="sm" v-b-tooltip.hover title="Remove from friends"><i class="fas fa-times"></i></b-button>
-              </div>
-            </b-col>
-          </b-form-row>
+          <div v-if="friendTab">
 
-          <hr>
+            <b-row>
+              <b-col lg="1" cols="3">
+                <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 80px;">
+              </b-col>
+              <b-col lg="11" cols="9">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <div><span class="font-weight-bold">User Name</span></div>
+                    <div><span class="text-white-50">From: 01.01.2019</span></div>
+                    <b-button variant="primary" size="sm">Go to the collection</b-button>
+                  </div>
+                  <a v-b-tooltip.hover title="Remove from friends" href="#"><i class="fas fa-times text-danger"></i></a>
+                </div>
+              </b-col>
+            </b-row>
 
-          <b-form-row>
-            <b-col lg="1" cols="3">
-              <img class="rounded" src="../../pictures/pic/2.jpg" alt="Card image" style="border-radius: 3px; max-height: 70px;">
-            </b-col>
-            <b-col lg="11" cols="9">
-              <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <div><span class="font-weight-bold">User Name</span></div>
-                  <div><span>From: 01.01.2019</span></div>
+            <hr class="mt-2 mb-2">
+
+            <b-row>
+              <b-col lg="1" cols="3">
+                <img class="rounded" src="../../pictures/pic/2.jpg" alt="Card image" style="border-radius: 3px; max-height: 80px;">
+              </b-col>
+              <b-col lg="11" cols="9">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <div><span class="font-weight-bold">User Name</span></div>
+                    <div><span class="text-white-50">From: 01.01.2019</span></div>
+                    <a></a>
+                    <b-button variant="primary" size="sm">Go to the collection</b-button>
+                  </div>
+                  <div>
+                    <a v-b-tooltip.hover title="Remove from friends" href="#"><i class="fas fa-times text-danger"></i></a>
+                  </div>
                 </div>
-                <div>
-                  <b-button variant="primary" size="sm" v-b-tooltip.hover title="Remove from friends"><i class="fas fa-film"></i></b-button>
-                  <b-button variant="danger" size="sm" v-b-tooltip.hover title="Remove from friends" class="ml-1"><i class="fas fa-times"></i></b-button>
+              </b-col>
+            </b-row>
+
+          </div>
+
+          <div v-if="requestTab">
+            <b-input-group prepend="" class="mb-3">
+              <b-form-input placeholder="Send request. Input unique ID here"/>
+              <b-input-group-append>
+                <b-button><i class="fas fa-paper-plane"></i></b-button>
+              </b-input-group-append>
+            </b-input-group>
+
+            <div class="mb-3 text-right">
+              <b-button-group size="sm">
+                <b-button class="border-dark" @click="setCardMode()" v-b-tooltip.hover title="Incoming"><i class="fas fa-sign-in-alt"></i></b-button>
+                <b-button class="border-dark" @click="setTableMode()" v-b-tooltip.hover title="Requests"><i class="fas fa-sign-out-alt"></i></b-button>
+              </b-button-group>
+            </div>
+
+            <hr class="mt-2 mb-2">
+
+            <b-row>
+              <b-col lg="1" cols="3">
+                <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 80px;">
+              </b-col>
+              <b-col lg="11" cols="9">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <div><span class="font-weight-bold">User Name</span></div>
+                    <div><span class="text-white-50">01.01.2019</span></div>
+                    <b-button-group size="sm">
+                      <b-button variant="success" class="border-dark" @click="setCardMode()">Approve</b-button>
+                      <b-button variant="danger" class="border-dark" @click="setTableMode()">Decline</b-button>
+                    </b-button-group>
+                  </div>
+                  <div>
+                    <i class="fas fa-sign-in-alt text-white-50"></i>
+                  </div>
                 </div>
-              </div>
-            </b-col>
-          </b-form-row>
+              </b-col>
+            </b-row>
+
+            <hr class="mt-2 mb-2">
+
+            <b-row>
+              <b-col lg="1" cols="3">
+                <img class="rounded" src="../../pictures/pic/2.jpg" alt="Card image" style="border-radius: 3px; max-height: 80px;">
+              </b-col>
+              <b-col lg="11" cols="9">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <div><span class="font-weight-bold">User Name</span></div>
+                    <div><span class="text-white-50">01.01.2019</span></div>
+                    <b-button disabled size="sm" variant="info">You have send friend request. Your request is waiting for approval</b-button>
+                  </div>
+                  <div>
+                    <i class="fas fa-sign-out-alt text-white-50"></i>
+                  </div>
+                </div>
+              </b-col>
+            </b-row>
+
+            <hr class="mt-2 mb-2">
+
+          </div>
 
         </b-col>
       </b-form-row>
 
     </b-card>
-
-    <b-form-row class="mt-3">
-      
-      <b-col lg="6">
-
-        <b-card
-                style=""
-                class="mb-2"
-        >
-          <b-card-title>
-            Friend Requests
-          </b-card-title>
-          <b-card-text>
-
-            <h5>Request</h5>
-            <b-input-group prepend="" class="mt-3">
-              <b-form-input placeholder="Input unique ID here"/>
-              <b-input-group-append>
-                <b-button variant="outline-primary">Send request</b-button>
-              </b-input-group-append>
-            </b-input-group>
-
-            <b-list-group flush class="mt-3">
-
-              <b-list-group-item class="d-flex justify-content-between align-items-center">
-                <div class="text-center">
-                  <i class="fas fa-user fa-3x"></i>
-                  <br>
-                  Your friend name
-                </div>
-                <div class="text-center">
-                  You got friend request
-                  <br>
-                  <b-button-group vertical>
-                    <b-button variant="success">Approve</b-button>
-                    <b-button variant="danger">Decline</b-button>
-                  </b-button-group>
-                </div>
-              </b-list-group-item>
-
-              <b-list-group-item class="d-flex justify-content-between align-items-center">
-                <div class="text-center">
-                  <i class="fas fa-user fa-3x"></i>
-                  <br>
-                  Your friend name
-                </div>
-                <div>
-                  <span>You have send friend request</span>
-                  <br>
-                  <span>Your request is waiting for approval</span>
-                </div>
-              </b-list-group-item>
-
-            </b-list-group>
-
-
-          </b-card-text>
-        </b-card>
-
-      </b-col>
-    </b-form-row>
 
   </div>
 </template>
@@ -153,22 +151,35 @@ export default {
   data() {
       return {
           tabIndex: 0,
+          friendTab: true,
+          requestTab: false
       }
   },
   methods: {
-      linkClass(idx) {
-          if (this.tabIndex === idx) {
-              return ['bg-secondary', 'text-light']
-          } else {
-              return ['text-light']
-          }
+      selectTab(type) {
+        if (type === 'friend') {
+            this.friendTab = true;
+            this.requestTab = false;
+        }
+        else {
+            this.friendTab = false;
+            this.requestTab = true;
+        }
       }
   }
 }
 </script>
 
 <style>
-  .tab-pane:focus {
-    outline: none;
+  hr {
+    background-color: rgba(41, 50, 60, 0.05);
+  }
+  .avatarContainer {
+    position: relative;
+  }
+  .changeAvatarButton {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
   }
 </style>

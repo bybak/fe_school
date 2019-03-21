@@ -4,49 +4,51 @@
     <h1 class="text-light">Movie collection of User</h1>
 
     <b-card no-body class="mb-2 p-3" bg-variant="dark" text-variant="light">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex justify-content-start">
+      <b-form-row>
+        <b-col cols="12" lg="11">
 
-          <div class="mr-2">
-            <b-form-select v-model="selected" size="sm">
-              <option :value="null">Sorting</option>
-            </b-form-select>
-          </div>
+          <b-form-row>
+            <b-col lg="2">
+              <b-form-select v-model="selected" size="sm">
+                <option :value="null">Sorting</option>
+              </b-form-select>
+            </b-col>
 
-          <div class="mr-2">
-            <b-button size="sm"><i class="fas fa-star"></i></b-button>
-          </div>
+            <b-col lg="1">
+              <b-button size="sm"><i class="fas fa-star"></i></b-button>
+            </b-col>
 
-          <div>
-            <b-input-group size="sm">
-              <b-form-input />
+            <b-col lg="3">
+              <b-input-group size="sm">
+                <b-form-input />
 
-              <b-dropdown size="sm" text="Search type"  slot="append">
-                <b-dropdown-item>Title</b-dropdown-item>
-                <b-dropdown-item>Genre</b-dropdown-item>
-              </b-dropdown>
-            </b-input-group>
-          </div>
+                <b-dropdown size="sm" text="Search type"  slot="append">
+                  <b-dropdown-item>Title</b-dropdown-item>
+                  <b-dropdown-item>Genre</b-dropdown-item>
+                </b-dropdown>
+              </b-input-group>
+            </b-col>
+          </b-form-row>
 
-        </div>
-        <div>
+        </b-col>
+        <b-col cols="12" lg="1" class="text-right">
           <b-button-group size="sm">
             <b-button  @click="setCardMode()"><i class="fas fa-grip-horizontal"></i></b-button>
             <b-button  @click="setTableMode()"><i class="fas fa-bars"></i></b-button>
           </b-button-group>
-        </div>
-      </div>
+        </b-col>
+      </b-form-row>
     </b-card>
 
     <b-form-row v-if="cardView">
       <b-col lg="4" sm="12" md="6" v-for="film in films">
 
         <b-card
-                :title="film.title"
                 class="mb-2 text-left"
                 bg-variant="dark"
                 text-variant="light"
         >
+          <h5>{{film.title}}</h5>
           <hr class="mt-2 mb-2">
           <b-form-row>
             <b-col lg="4" md="2" class="text-center">

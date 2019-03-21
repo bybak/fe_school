@@ -17,21 +17,21 @@
             </div>
             <b-card-text>
 
-              <hr class="mt-2 mb-2">
+              <hr class="mt-2 mb-1">
               <div v-for="item in items">
                 <b-form-row>
                   <b-col lg="2">
-                    <span>{{item.field}}</span>
+                    <span class="font-weight-bold">{{item.field}}</span>
                   </b-col>
                   <b-col lg="10">
                     <span>{{item.value}}</span>
                   </b-col>
                 </b-form-row>
-                <hr class="mt-2 mb-2">
+                <hr class="mt-1 mb-1">
               </div>
             </b-card-text>
 
-            <b-card-text>
+            <b-card-text class="text-white-50">
               Marty McFly, a 17-year-old high school student, is accidentally sent thirty years into the past in a time-traveling DeLorean invented by his close friend, the maverick scientist Doc Brown.
             </b-card-text>
 
@@ -42,7 +42,7 @@
 
     <b-card no-body class="overflow-hidden mt-3" bg-variant="dark" text-variant="light">
       <b-card-body>
-        <h4>Comments</h4>
+        <h5>Comments</h5>
 
         <b-form-textarea
                 id="textarea"
@@ -56,29 +56,49 @@
 
         <hr class="bg-secondary">
 
-        <div class="d-flex justify-content-between">
-          <i class="fas fa-user fa-3x mr-4"></i>
-          <div>
-            <span class="font-weight-bold">User, 01.01.2019</span>
+        <b-form-row>
+          <b-col lg="1">
+            <img class="rounded" src="../../pictures/pic/2.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px;">
+          </b-col>
+          <b-col lg="11">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
+              </div>
+              <b-button-group size="sm">
+                <b-button variant="success" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
+                <b-button variant="danger" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
+              </b-button-group>
+            </div>
             <hr class="mt-2 mb-2">
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at sagittis enim. Sed maximus, justo a dapibus rhoncus, tellus velit ullamcorper metus, sit amet imperdiet metus libero sit amet nisl. Etiam quis lectus sed nisl interdum suscipit. Pellentesque auctor sodales leo, sed ultrices mi. Donec maximus interdum nibh, non iaculis tellus bibendum in. Integer ultricies mi ut erat vulputate, in rutrum felis sodales. Pellentesque cursus feugiat sapien, id condimentum orci faucibus et. Cras rhoncus elit velit, quis euismod lectus scelerisque in. Aenean vel metus a lectus sagittis cursus sed ac massa.
             </p>
-          </div>
-        </div>
+          </b-col>
+        </b-form-row>
 
         <hr class="bg-secondary">
 
-        <div class="d-flex justify-content-between">
-          <i class="fas fa-user fa-3x mr-4"></i>
-          <div>
-            <span class="font-weight-bold">User, 01.01.2019</span>
+        <b-form-row>
+          <b-col lg="1">
+            <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px;">
+          </b-col>
+          <b-col lg="11">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
+              </div>
+              <b-button-group size="sm">
+                <b-button variant="success" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
+                <b-button variant="danger" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
+              </b-button-group>
+            </div>
             <hr class="mt-2 mb-2">
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at sagittis enim. Sed maximus, justo a dapibus rhoncus, tellus velit ullamcorper metus, sit amet imperdiet metus libero sit amet nisl. Etiam quis lectus sed nisl interdum suscipit. Pellentesque auctor sodales leo, sed ultrices mi. Donec maximus interdum nibh, non iaculis tellus bibendum in. Integer ultricies mi ut erat vulputate, in rutrum felis sodales. Pellentesque cursus feugiat sapien, id condimentum orci faucibus et. Cras rhoncus elit velit, quis euismod lectus scelerisque in. Aenean vel metus a lectus sagittis cursus sed ac massa.
             </p>
-          </div>
-        </div>
+          </b-col>
+        </b-form-row>
 
 
       </b-card-body>
