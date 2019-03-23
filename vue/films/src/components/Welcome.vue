@@ -1,8 +1,12 @@
 <template>
   <div class="welcome">
-
-    <h1>Welcome page</h1>
-
+    <div class="text-light pt-5 text-center">
+      <i class="fas fa-film fa-6x"></i>
+      <h1 class="mt-2">Welcome</h1>
+      <div>
+        Here you can find absolutely everything about movies.
+      </div>
+    </div>
   </div>
 </template>
 

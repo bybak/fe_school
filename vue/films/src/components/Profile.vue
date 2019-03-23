@@ -27,8 +27,8 @@
 
     <b-card class="mt-3" bg-variant="dark" text-variant="light">
 
-      <b-form-row>
-        <b-col lg="3" cols="12">
+      <b-row>
+        <b-col lg="3" cols="12" class="mb-4">
           <b-button :pressed.sync="friendTab" @click="selectTab('friend')" block class="text-left">Friends</b-button>
           <b-button :pressed.sync="requestTab" @click="selectTab('request')" block class="d-flex justify-content-between align-items-center">Requests <b-badge variant="light">4</b-badge></b-button>
         </b-col>
@@ -36,6 +36,7 @@
 
           <div v-if="friendTab">
 
+            <h5>Friends</h5>
             <b-row>
               <b-col lg="1" cols="3">
                 <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 80px;">
@@ -52,7 +53,7 @@
               </b-col>
             </b-row>
 
-            <hr class="mt-2 mb-2">
+            <hr>
 
             <b-row>
               <b-col lg="1" cols="3">
@@ -76,21 +77,27 @@
           </div>
 
           <div v-if="requestTab">
-            <b-input-group prepend="" class="mb-3">
-              <b-form-input placeholder="Send request. Input unique ID here"/>
-              <b-input-group-append>
-                <b-button><i class="fas fa-paper-plane"></i></b-button>
-              </b-input-group-append>
-            </b-input-group>
 
-            <div class="mb-3 text-right">
-              <b-button-group size="sm">
-                <b-button class="border-dark" @click="setCardMode()" v-b-tooltip.hover title="Incoming"><i class="fas fa-sign-in-alt"></i></b-button>
-                <b-button class="border-dark" @click="setTableMode()" v-b-tooltip.hover title="Requests"><i class="fas fa-sign-out-alt"></i></b-button>
-              </b-button-group>
-            </div>
+            <h5>Requests</h5>
+            <b-form-row>
+              <b-col lg="9" cols="8">
+                <b-input-group size="sm" prepend="" class="mb-3">
+                  <b-form-input placeholder="Send request. Input unique ID here"/>
+                  <b-input-group-append>
+                    <b-button><i class="fas fa-paper-plane"></i></b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-col>
 
-            <hr class="mt-2 mb-2">
+              <b-col lg="3" cols="4">
+                <div class="mb-3 text-right">
+                  <b-button-group size="sm">
+                    <b-button class="border-dark" @click="setCardMode()" v-b-tooltip.hover title="Incoming"><i class="fas fa-sign-in-alt"></i></b-button>
+                    <b-button class="border-dark" @click="setTableMode()" v-b-tooltip.hover title="Requests"><i class="fas fa-sign-out-alt"></i></b-button>
+                  </b-button-group>
+                </div>
+              </b-col>
+            </b-form-row>
 
             <b-row>
               <b-col lg="1" cols="3">
@@ -113,7 +120,7 @@
               </b-col>
             </b-row>
 
-            <hr class="mt-2 mb-2">
+            <hr>
 
             <b-row>
               <b-col lg="1" cols="3">
@@ -132,13 +139,11 @@
                 </div>
               </b-col>
             </b-row>
-
-            <hr class="mt-2 mb-2">
-
+            
           </div>
 
         </b-col>
-      </b-form-row>
+      </b-row>
 
     </b-card>
 

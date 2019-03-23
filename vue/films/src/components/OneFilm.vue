@@ -6,7 +6,6 @@
     <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light">
       <b-row no-gutters>
         <b-col md="2">
-          <!--<b-card-img src="../../pictures/pic/1.jpg" class="rounded-0" />-->
           <img src="../../pictures/pic/1.jpg" class="card-img" alt="Card image">
         </b-col>
         <b-col md="10">
@@ -65,10 +64,10 @@
               <div>
                 <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
               </div>
-              <b-button-group size="sm">
-                <b-button variant="success" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
-                <b-button variant="danger" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
-              </b-button-group>
+              <div>
+                <b-button variant="outline-success" size="sm" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
+                <b-button variant="outline-danger" size="sm" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
+              </div>
             </div>
             <hr class="mt-2 mb-2">
             <p>
@@ -88,10 +87,10 @@
               <div>
                 <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
               </div>
-              <b-button-group size="sm">
-                <b-button variant="success" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
-                <b-button variant="danger" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
-              </b-button-group>
+              <div>
+                <b-button variant="outline-success" size="sm" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
+                <b-button variant="outline-danger" size="sm" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
+              </div>
             </div>
             <hr class="mt-2 mb-2">
             <p>
