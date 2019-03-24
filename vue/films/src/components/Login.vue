@@ -11,20 +11,20 @@
     >
 
       <div id="loginForm" v-if="showLogin">
-        <label for="inputFormatter">Email</label>
+        <label for="login_email">Email</label>
         <b-form-input
-                id="inputFormatter"
-                v-model="text1"
+                id="login_email"
+                v-model="loginEmail"
                 type="text"
                 placeholder="Enter your name"
                 aria-describedby="inputFormatterHelp"
                 :formatter="format"
         />
 
-        <label for="inputFormatter" class="mt-3">Password</label>
+        <label for="login_password" class="mt-3">Password</label>
         <b-form-input
-                id="inputFormatter"
-                v-model="text1"
+                id="login_password"
+                v-model="loginPassword"
                 type="text"
                 placeholder="Enter your name"
                 aria-describedby="inputFormatterHelp"
@@ -34,39 +34,39 @@
 
       <div id="registerForm" v-if="showRegister">
 
-        <label for="inputFormatter">Email</label>
+        <label for="register_email">Email</label>
         <b-form-input
-                id="inputFormatter"
-                v-model="text1"
+                id="register_email"
+                v-model="registerEmail"
                 type="text"
                 placeholder="Enter your name"
                 aria-describedby="inputFormatterHelp"
                 :formatter="format"
         />
 
-        <label for="inputFormatter" class="mt-3">Name</label>
+        <label for="register_name" class="mt-3">Name</label>
         <b-form-input
-                id="inputFormatter"
-                v-model="text1"
+                id="register_name"
+                v-model="registerName"
                 type="text"
                 placeholder="Enter your name"
                 aria-describedby="inputFormatterHelp"
                 :formatter="format"
         />
-        <label for="inputFormatter" class="mt-3">Password</label>
+        <label for="register_password1" class="mt-3">Password</label>
         <b-form-input
-                id="inputFormatter"
-                v-model="text1"
+                id="register_password1"
+                v-model="registerPassword1"
                 type="text"
                 placeholder="Enter your name"
                 aria-describedby="inputFormatterHelp"
                 :formatter="format"
         />
 
-        <label for="inputFormatter" class="mt-3">Password</label>
+        <label for="register_password2" class="mt-3">Password</label>
         <b-form-input
-                id="inputFormatter"
-                v-model="text1"
+                id="register_password2"
+                v-model="registerPassword2"
                 type="text"
                 placeholder="Enter your name"
                 aria-describedby="inputFormatterHelp"
@@ -93,10 +93,19 @@ export default {
           showModal: false,
           showLogin: true,
           showRegister: false,
-          modalTitle: 'Login'
+          modalTitle: 'Login',
+          loginEmail: '',
+          loginPassword: '',
+          registerEmail: '',
+          registerName: '',
+          registerPassword1: '',
+          registerPassword2: ''
       }
   },
   methods: {
+      format() {
+        return true;
+      },
       show() {
           this.showModal = true;
       },

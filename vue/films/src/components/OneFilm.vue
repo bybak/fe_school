@@ -17,7 +17,7 @@
             <b-card-text>
 
               <hr class="mt-2 mb-1">
-              <div v-for="item in items">
+              <div :key="index" v-for="(item, index) in items">
                 <b-form-row>
                   <b-col lg="2">
                     <span class="font-weight-bold">{{item.field}}</span>
@@ -26,7 +26,7 @@
                     <span>{{item.value}}</span>
                   </b-col>
                 </b-form-row>
-                <hr class="mt-1 mb-1">
+                <!--<hr class="mt-1 mb-1">-->
               </div>
             </b-card-text>
 
@@ -34,10 +34,62 @@
               Marty McFly, a 17-year-old high school student, is accidentally sent thirty years into the past in a time-traveling DeLorean invented by his close friend, the maverick scientist Doc Brown.
             </b-card-text>
 
+            <b-form-row class="text-white-50 mt-3 mb-0">
+
+              <b-col lg="4" cols="12">
+                <b-form-row>
+                  <b-col lg="3" cols="3">
+                    <i class="fas fa-film fa-3x"></i>
+                  </b-col>
+                  <b-col lg="9" cols="9">
+                    <div>Kinopoisk:</div>
+                    <div>8.6</div>
+                  </b-col>
+                </b-form-row>
+              </b-col>
+
+              <b-col lg="4" cols="12">
+                <b-form-row>
+                  <b-col lg="3" cols="3">
+                    <i class="fab fa-imdb fa-3x"></i>
+                  </b-col>
+                  <b-col lg="9" cols="9">
+                    <div>IMDb:</div>
+                    <div>8.5</div>
+                  </b-col>
+                </b-form-row>
+              </b-col>
+
+              <b-col lg="4" cols="12">
+                <b-form-row>
+                  <b-col lg="6" cols="6">
+
+                    <fa-rating
+                            :item-size="25"
+                            :glyph="StarIcon"
+                            inactive-color="#59616a"
+                            active-color="#F6F7F9"
+                            :border-width="0"
+                            text-class="custom-text"
+                            :show-rating="false"
+                    ></fa-rating>
+
+                  </b-col>
+                  <b-col lg="6" cols="6">
+                    <div>Site rating:</div>
+                    <div>5.0</div>
+                  </b-col>
+                </b-form-row>
+              </b-col>
+
+            </b-form-row>
+
           </b-card-body>
         </b-col>
       </b-row>
     </b-card>
+
+    <p style="background-color: #f6f7f9"></p>
 
     <b-card no-body class="overflow-hidden mt-3" bg-variant="dark" text-variant="light">
       <b-card-body>
@@ -56,10 +108,10 @@
         <hr class="bg-secondary">
 
         <b-form-row>
-          <b-col lg="1">
-            <img class="rounded" src="../../pictures/pic/2.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px;">
+          <b-col lg="1" cols="3">
+            <img class="rounded" src="../../pictures/pic/2.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px; max-width: 100%">
           </b-col>
-          <b-col lg="11">
+          <b-col lg="11" cols="9">
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
@@ -79,10 +131,10 @@
         <hr class="bg-secondary">
 
         <b-form-row>
-          <b-col lg="1">
-            <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px;">
+          <b-col lg="1" cols="3">
+            <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px; max-width: 100%">
           </b-col>
-          <b-col lg="11">
+          <b-col lg="11" cols="9">
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
@@ -107,10 +159,16 @@
 </template>
 
 <script>
+import Star from 'vue-rate-it/glyphs/star';
+
 export default {
     name: 'oneFilm',
+    created(){
+        this.StarIcon = Star
+    },
     data() {
         return {
+            StarIcon: '',
             fields: [],
             items: [
                 { field: 'Year', value: '1985' },

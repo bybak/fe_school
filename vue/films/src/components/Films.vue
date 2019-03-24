@@ -14,32 +14,44 @@
         </b-col>
 
         <b-col cols="12" lg="4" class="pb-1 pt-1">
-          <b-input-group size="sm">
-            <b-form-input />
+          <b-form-row>
+            <b-col cols="11">
+              <b-input-group size="sm">
+                <b-form-input />
 
-            <b-dropdown size="sm" text="Search type"  slot="append">
-              <b-dropdown-item>Title</b-dropdown-item>
-              <b-dropdown-item>Genre</b-dropdown-item>
-            </b-dropdown>
-          </b-input-group>
+                <b-dropdown size="sm" text="Search type" slot="append" no-caret>
+                  <template slot="button-content">
+                    <i class="fas fa-sliders-h"></i>
+                  </template>
+                  <b-dropdown-item>Title</b-dropdown-item>
+                  <b-dropdown-item>Genre</b-dropdown-item>
+                </b-dropdown>
+
+                <b-button slot="append"><i class="fas fa-search"></i></b-button>
+              </b-input-group>
+            </b-col>
+            <b-col cols="1" class="text-right">
+              <b-button size="sm"><i class="fas fa-star"></i></b-button>
+            </b-col>
+          </b-form-row>
         </b-col>
 
         <b-col cols="12" lg="4" class="text-right pb-1 pt-1">
 
-          <b-button size="sm" class="mr-2"><i class="fas fa-star"></i></b-button>
-
           <b-button-group size="sm">
-              <b-button  @click="setBigCardMode()"><i class="fas fa-th-large"></i></b-button>
-              <b-button  @click="setCardMode()"><i class="fas fa-th"></i></b-button>
-              <b-button  @click="setTableMode()"><i class="fas fa-bars"></i></b-button>
-            </b-button-group>
+            <b-button  @click="setBigCardMode()"><i class="fas fa-th-large"></i></b-button>
+            <b-button  @click="setTableMode()"><i class="fas fa-bars"></i></b-button>
+          </b-button-group>
+
+          <b-button size="sm" class="ml-2"><i class="fas fa-plus"></i></b-button>
+
         </b-col>
       </b-form-row>
     </b-card>
 
     <b-form-row v-if="bigCardView">
-      <b-col lg="3" cols="12" md="6" v-for="film in films">
-        <router-link to="/film" tag="card">
+      <b-col lg="3" :key="film.id" cols="12" md="6" v-for="film in films">
+        <router-link to="/film" tag="div">
           <b-card no-body
                   class="mb-2 text-left"
                   bg-variant="dark"
@@ -50,7 +62,20 @@
               </div>
             </div>
             <b-card-text class="m-2">
-              <h6>{{film.title}}</h6>
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">{{film.title}}</h6>
+
+                <fa-rating
+                        :item-size="15"
+                        :glyph="StarIcon"
+                        inactive-color="#59616a"
+                        active-color="#F6F7F9"
+                        :border-width="0"
+                        text-class="custom-text"
+                        :show-rating="false"
+                ></fa-rating>
+
+              </div>
               <div>
                 <small class="text-white-50">{{film.year}}, {{film.genre}}</small>
               </div>
@@ -58,36 +83,6 @@
           </b-card>
         </router-link>
       </b-col>
-    </b-form-row>
-
-    <b-form-row v-if="cardView">
-      <b-col lg="4" sm="12" md="6" v-for="film in films">
-
-        <b-card
-                class="mb-2 text-left"
-                bg-variant="dark"
-                text-variant="light"
-        >
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">{{film.title}}</h5>
-            <span class="text-white-50">{{film.year}}</span>
-          </div>
-          <hr class="mt-2 mb-2">
-          <b-form-row>
-            <b-col lg="4" md="2" class="text-center">
-              <img :src="film.poster" alt="Card image" style="border-radius: 3px; max-height: 140px;">
-            </b-col>
-            <b-col lg="8" md="10" class="d-flex align-items-start flex-column">
-              <div class="mb-auto w-100">
-                <span>{{film.genre}}</span>
-              </div>
-              <b-button to="/film" size="sm" class="mt-2">More</b-button>
-            </b-col>
-          </b-form-row>
-        </b-card>
-
-      </b-col>
-
     </b-form-row>
 
     <b-form-row v-if="tableView">
@@ -104,13 +99,18 @@
 </template>
 
 <script>
+import Star from 'vue-rate-it/glyphs/star';
+
 export default {
     name: 'films',
+    created(){
+        this.StarIcon = Star
+    },
     data() {
         return {
+            StarIcon: '',
             selected: null,
             bigCardView: true,
-            cardView: false,
             tableView: false,
             fields: {
                 poster: {
@@ -134,9 +134,9 @@ export default {
                 }
             },
             films: [
-                { title: 'Back to the Future', poster: require('../../pictures/pic/1.jpg'), year: '1985', genre: 'Adventure | Comedy | Sci-Fi' },
-                { title: 'The Godfather', poster: require('../../pictures/pic/2.jpg'), year: '1972', genre: 'Crime | Drama' },
-                { title: 'Blade Runner 2049', poster: require('../../pictures/pic/3.jpg'), year: '2017', genre: 'Drama | Mystery | Sci-Fi' },
+                { id: 1, title: 'Back to the Future', poster: require('../../pictures/pic/1.jpg'), year: '1985', genre: 'Adventure | Comedy | Sci-Fi' },
+                { id: 2, title: 'The Godfather', poster: require('../../pictures/pic/2.jpg'), year: '1972', genre: 'Crime | Drama' },
+                { id: 3, title: 'Blade Runner 2049', poster: require('../../pictures/pic/3.jpg'), year: '2017', genre: 'Drama | Mystery | Sci-Fi' },
             ]
         }
     },
@@ -144,16 +144,9 @@ export default {
         setBigCardMode() {
             this.bigCardView = true;
             this.tableView = false;
-            this.cardView = false;
-        },
-        setCardMode() {
-            this.tableView = false;
-            this.cardView = true;
-            this.bigCardView = false;
         },
         setTableMode() {
             this.tableView = true;
-            this.cardView = false;
             this.bigCardView = false;
         }
     }
@@ -161,4 +154,13 @@ export default {
 </script>
 
 <style>
+  .rating {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    /*background-color: rgba(246, 247, 249, 0.51);*/
+    padding-left: 3px;
+    padding-right: 3px;
+    /*border: 1px solid rgba(246, 247, 249, 0.63);*/
+  }
 </style>

@@ -20,6 +20,46 @@
               Unique ID: 1234567890
             </b-card-text>
 
+            <b-form-row class="text-white-50">
+
+              <b-col lg="4" cols="12" class="mb-3">
+                <b-form-row>
+                  <b-col lg="3" cols="3">
+                    <i class="fas fa-comment-alt fa-3x"></i>
+                  </b-col>
+                  <b-col lg="9" cols="9">
+                    <div>Comments:</div>
+                    <div>137</div>
+                  </b-col>
+                </b-form-row>
+              </b-col>
+
+              <b-col lg="4" cols="12" class="mb-3">
+                <b-form-row>
+                  <b-col lg="3" cols="3">
+                    <i class="fas fa-film fa-3x"></i>
+                  </b-col>
+                  <b-col lg="9" cols="9">
+                    <div>Films:</div>
+                    <div>5</div>
+                  </b-col>
+                </b-form-row>
+              </b-col>
+
+              <b-col lg="4" cols="12">
+                <b-form-row>
+                  <b-col lg="3" cols="3">
+                    <i class="fas fa-users fa-3x"></i>
+                  </b-col>
+                  <b-col lg="9" cols="9">
+                    <div>Friends:</div>
+                    <div>71</div>
+                  </b-col>
+                </b-form-row>
+              </b-col>
+
+            </b-form-row>
+
           </b-card-body>
         </b-col>
       </b-row>
@@ -36,7 +76,7 @@
 
           <div v-if="friendTab">
 
-            <h5>Friends</h5>
+            <h5>Friends <small class="text-white-50">( 71 )</small></h5>
             <b-row>
               <b-col lg="1" cols="3">
                 <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 80px;">
@@ -46,7 +86,7 @@
                   <div>
                     <div><span class="font-weight-bold">User Name</span></div>
                     <div><span class="text-white-50">From: 01.01.2019</span></div>
-                    <b-button variant="primary" size="sm">Go to the collection</b-button>
+                    <b-button variant="outline-primary" size="sm">Go to the collection</b-button>
                   </div>
                   <a v-b-tooltip.hover title="Remove from friends" href="#"><i class="fas fa-times text-danger"></i></a>
                 </div>
@@ -65,7 +105,7 @@
                     <div><span class="font-weight-bold">User Name</span></div>
                     <div><span class="text-white-50">From: 01.01.2019</span></div>
                     <a></a>
-                    <b-button variant="primary" size="sm">Go to the collection</b-button>
+                    <b-button variant="outline-primary" size="sm">Go to the collection</b-button>
                   </div>
                   <div>
                     <a v-b-tooltip.hover title="Remove from friends" href="#"><i class="fas fa-times text-danger"></i></a>
@@ -92,8 +132,8 @@
               <b-col lg="3" cols="4">
                 <div class="mb-3 text-right">
                   <b-button-group size="sm">
-                    <b-button class="border-dark" @click="setCardMode()" v-b-tooltip.hover title="Incoming"><i class="fas fa-sign-in-alt"></i></b-button>
-                    <b-button class="border-dark" @click="setTableMode()" v-b-tooltip.hover title="Requests"><i class="fas fa-sign-out-alt"></i></b-button>
+                    <b-button class="border-dark" v-b-tooltip.hover title="Incoming"><i class="fas fa-sign-in-alt"></i></b-button>
+                    <b-button class="border-dark" v-b-tooltip.hover title="Requests"><i class="fas fa-sign-out-alt"></i></b-button>
                   </b-button-group>
                 </div>
               </b-col>
@@ -109,8 +149,8 @@
                     <div><span class="font-weight-bold">User Name</span></div>
                     <div><span class="text-white-50">01.01.2019</span></div>
                     <b-button-group size="sm">
-                      <b-button variant="success" class="border-dark" @click="setCardMode()">Approve</b-button>
-                      <b-button variant="danger" class="border-dark" @click="setTableMode()">Decline</b-button>
+                      <b-button variant="outline-success">Approve</b-button>
+                      <b-button variant="outline-danger">Decline</b-button>
                     </b-button-group>
                   </div>
                   <div>
@@ -131,7 +171,7 @@
                   <div>
                     <div><span class="font-weight-bold">User Name</span></div>
                     <div><span class="text-white-50">01.01.2019</span></div>
-                    <b-button disabled size="sm" variant="info">You have send friend request. Your request is waiting for approval</b-button>
+                    <b-button disabled size="sm" variant="outline-info">You have send friend request. Your request is waiting for approval</b-button>
                   </div>
                   <div>
                     <i class="fas fa-sign-out-alt text-white-50"></i>
@@ -151,8 +191,10 @@
 </template>
 
 <script>
+    import BCol from "bootstrap-vue/src/components/layout/col";
 export default {
-  name: 'profile',
+    components: {BCol},
+    name: 'profile',
   data() {
       return {
           tabIndex: 0,
