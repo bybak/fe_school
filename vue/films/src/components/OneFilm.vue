@@ -6,32 +6,42 @@
     <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light">
       <b-row no-gutters>
         <b-col md="2">
-          <img src="../../pictures/pic/1.jpg" class="card-img" alt="Card image">
+          <img :src="film.poster" class="card-img" alt="Card image">
         </b-col>
         <b-col md="10">
           <b-card-body>
             <div class="d-flex justify-content-between align-items-center">
-              <h4 class="m-0">Back to the Future</h4>
+              <h4 class="m-0">{{film.title}}</h4>
               <b-button size="sm" variant="primary" v-b-tooltip.hover title="Copy to my collection"><i class="fas fa-copy"></i></b-button>
             </div>
             <b-card-text>
 
               <hr class="mt-2 mb-1">
-              <div :key="index" v-for="(item, index) in items">
+              <div>
                 <b-form-row>
                   <b-col lg="2">
-                    <span class="font-weight-bold">{{item.field}}</span>
+                    <span class="font-weight-bold">Year</span>
                   </b-col>
                   <b-col lg="10">
-                    <span>{{item.value}}</span>
+                    <span>{{film.year}}</span>
                   </b-col>
                 </b-form-row>
+
+                <b-form-row>
+                  <b-col lg="2">
+                    <span class="font-weight-bold">Genre</span>
+                  </b-col>
+                  <b-col lg="10">
+                    <span>{{film.genre}}</span>
+                  </b-col>
+                </b-form-row>
+
                 <!--<hr class="mt-1 mb-1">-->
               </div>
             </b-card-text>
 
             <b-card-text class="text-white-50">
-              Marty McFly, a 17-year-old high school student, is accidentally sent thirty years into the past in a time-traveling DeLorean invented by his close friend, the maverick scientist Doc Brown.
+              {{film.text}}
             </b-card-text>
 
             <b-form-row class="text-white-50 mt-3 mb-0">
@@ -97,7 +107,7 @@
 
         <b-form-textarea
                 id="textarea"
-                v-model="text"
+                v-model="comment"
                 placeholder="Enter something..."
                 rows="3"
                 max-rows="6"
@@ -166,15 +176,33 @@ export default {
     created(){
         this.StarIcon = Star
     },
+    props: ['id'],
+    created() {
+
+      const app = this;
+      this.$fireStore.collection("films").doc(this.id).get().then(function(doc) {
+          if (doc.exists) {
+              app.film = doc.data();
+              console.log("Document data:", doc.data());
+          } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+          }
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+      });
+
+
+    },
+
+    computed: {
+    },
+
     data() {
         return {
             StarIcon: '',
-            fields: [],
-            items: [
-                { field: 'Year', value: '1985' },
-                { field: 'Genres', value: 'Adventure | Comedy | Sci-Fi' },
-                { field: 'Actors', value: 'Actors' },
-            ]
+            film: '',
+            comment: '',
         }
     }
 }

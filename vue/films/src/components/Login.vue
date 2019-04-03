@@ -1,88 +1,102 @@
 <template>
-    <b-modal
-            v-model="showModal"
-            id="loginModal"
-            :title="modalTitle"
 
-            content-class="bg-dark text-light"
+    <div>
 
-            hide-footer
-            hide-header
-    >
+      <b-alert
+              variant="danger"
+              dismissible
+              fade
+              :show="showDismissibleAlert"
+              @dismissed="showDismissibleAlert=0"
+              id = "login_register_alert"
+      >
+        {{alertMessage}}
+      </b-alert>
 
-      <div id="loginForm" v-if="showLogin">
-        <label for="login_email">Email</label>
-        <b-form-input
-                id="login_email"
-                v-model="loginEmail"
-                type="text"
-                placeholder="Enter your name"
-                aria-describedby="inputFormatterHelp"
-                :formatter="format"
-        />
+      <b-modal
+              v-model="showModal"
+              id="loginModal"
+              :title="modalTitle"
+              content-class="bg-dark text-light"
+              hide-footer
+              hide-header
+      >
 
-        <label for="login_password" class="mt-3">Password</label>
-        <b-form-input
-                id="login_password"
-                v-model="loginPassword"
-                type="text"
-                placeholder="Enter your name"
-                aria-describedby="inputFormatterHelp"
-                :formatter="format"
-        />
-      </div>
+        <div id="loginForm" v-if="showLogin">
+          <label for="login_email">Email</label>
+          <b-form-input
+                  id="login_email"
+                  v-model="email"
+                  type="text"
+                  placeholder="email"
+                  aria-describedby="inputFormatterHelp"
 
-      <div id="registerForm" v-if="showRegister">
+          />
 
-        <label for="register_email">Email</label>
-        <b-form-input
-                id="register_email"
-                v-model="registerEmail"
-                type="text"
-                placeholder="Enter your name"
-                aria-describedby="inputFormatterHelp"
-                :formatter="format"
-        />
+          <label for="login_password" class="mt-3">Password</label>
+          <b-form-input
+                  id="login_password"
+                  v-model="password"
+                  type="text"
+                  placeholder="password"
+                  aria-describedby="inputFormatterHelp"
 
-        <label for="register_name" class="mt-3">Name</label>
-        <b-form-input
-                id="register_name"
-                v-model="registerName"
-                type="text"
-                placeholder="Enter your name"
-                aria-describedby="inputFormatterHelp"
-                :formatter="format"
-        />
-        <label for="register_password1" class="mt-3">Password</label>
-        <b-form-input
-                id="register_password1"
-                v-model="registerPassword1"
-                type="text"
-                placeholder="Enter your name"
-                aria-describedby="inputFormatterHelp"
-                :formatter="format"
-        />
+          />
+        </div>
 
-        <label for="register_password2" class="mt-3">Password</label>
-        <b-form-input
-                id="register_password2"
-                v-model="registerPassword2"
-                type="text"
-                placeholder="Enter your name"
-                aria-describedby="inputFormatterHelp"
-                :formatter="format"
-        />
+        <div id="registerForm" v-if="showRegister">
 
-      </div>
+          <label for="register_email">Email</label>
+          <b-form-input
+                  id="register_email"
+                  v-model="email"
+                  type="text"
+                  placeholder="email"
+                  aria-describedby="inputFormatterHelp"
 
-      <div class="mt-3">
-        <b-button v-if="showLogin" variant="outline-primary" @click="switchPanel()">Register</b-button>
-        <b-button v-if="showRegister" variant="outline-primary" @click="switchPanel()">Login</b-button>
-        <b-button v-if="showLogin" class="float-right" variant="primary">Login</b-button>
-        <b-button v-if="showRegister" class="float-right" variant="primary">Register</b-button>
-      </div>
+          />
 
-    </b-modal>
+          <label for="register_name" class="mt-3">Name</label>
+          <b-form-input
+                  id="register_name"
+                  v-model="name"
+                  type="text"
+                  placeholder="name"
+                  aria-describedby="inputFormatterHelp"
+
+          />
+          <label for="register_password1" class="mt-3">Password</label>
+          <b-form-input
+                  id="register_password1"
+                  v-model="password"
+                  type="text"
+                  placeholder="password"
+                  aria-describedby="inputFormatterHelp"
+
+          />
+
+          <label for="register_password2" class="mt-3">Confirm password</label>
+          <b-form-input
+                  id="register_password2"
+                  v-model="confirmPassword"
+                  type="text"
+                  placeholder="confirm password"
+                  aria-describedby="inputFormatterHelp"
+
+          />
+
+        </div>
+
+        <div class="mt-3">
+          <b-button v-if="showLogin" variant="outline-primary" @click="switchPanel()">Register</b-button>
+          <b-button v-if="showRegister" variant="outline-primary" @click="switchPanel()">Login</b-button>
+
+          <b-button v-if="showLogin" class="float-right" variant="primary" @click="login()">Login</b-button>
+          <b-button v-if="showRegister" class="float-right" variant="primary" @click="register()">Register</b-button>
+        </div>
+
+      </b-modal>
+    </div>
 </template>
 
 <script>
@@ -94,17 +108,69 @@ export default {
           showLogin: true,
           showRegister: false,
           modalTitle: 'Login',
-          loginEmail: '',
-          loginPassword: '',
-          registerEmail: '',
-          registerName: '',
-          registerPassword1: '',
-          registerPassword2: ''
+          email: '',
+          password: '',
+          name: '',
+          confirmPassword: '',
+          showDismissibleAlert: 0,
+          alertMessage: ''
       }
   },
+  mounted() {
+
+  },
   methods: {
-      format() {
-        return true;
+      register() {
+          if (this.password !== this.confirmPassword) {
+              this.showAlert({code: '00', message: 'Passwords should be the same'});
+              return;
+          }
+
+          let app = this;
+          this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
+              function (user) {
+                  app.$store.commit('setUser', user);
+
+                  user = app.$firebase.auth().currentUser;
+                  user.updateProfile({
+                      displayName: app.name,
+//                      photoURL: "https://example.com/jane-q-user/profile.jpg"
+                  }).then(function() {
+                      // Update successful.
+                  }).catch(function(error) {
+                      // An error happened.
+                  });
+
+                  app.$db.ref('users').child(user.uid).set({
+                      id: user.uid,
+                      name: app.name,
+                      email: app.email,
+                  });
+
+                  app.hide();
+              },
+              function (error) {
+                app.showAlert(error);
+              }
+          );
+      },
+      login() {
+          let app = this;
+          this.$firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
+              function (user) {
+                  app.$store.commit('setUser', user);
+                  app.hide();
+              },
+              function (error) {
+                  app.showAlert(error);
+              }
+          );
+      },
+      showAlert(error) {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          this.alertMessage = '[' + errorCode + '] ' + errorMessage;
+          this.showDismissibleAlert = 3;
       },
       show() {
           this.showModal = true;
@@ -128,4 +194,10 @@ export default {
 </script>
 
 <style>
+  #login_register_alert {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 9999;
+  }
 </style>

@@ -7,9 +7,14 @@
       <b-form-row>
         <b-col cols="12" lg="4" class="pb-1 pt-1">
 
-          <b-form-select v-model="selected" size="sm">
-            <option :value="null">Sorting</option>
-          </b-form-select>
+          <b-dropdown id="dropdown-1" size="sm" text="Sorting" variant="light" class="w-100 text-left">
+            <b-dropdown-item><i class="fas fa-sort-amount-up"></i> Rating</b-dropdown-item>
+            <b-dropdown-item><i class="fas fa-sort-amount-down"></i> Rating</b-dropdown-item>
+            <b-dropdown-item><i class="fas fa-sort-amount-up"></i> Year</b-dropdown-item>
+            <b-dropdown-item><i class="fas fa-sort-amount-down"></i> Year</b-dropdown-item>
+            <b-dropdown-item><i class="fas fa-sort-amount-up"></i> Title</b-dropdown-item>
+            <b-dropdown-item><i class="fas fa-sort-amount-down"></i> Title</b-dropdown-item>
+          </b-dropdown>
 
         </b-col>
 
@@ -43,19 +48,19 @@
             <b-button  @click="setTableMode()"><i class="fas fa-bars"></i></b-button>
           </b-button-group>
 
-          <b-button size="sm" class="ml-2"><i class="fas fa-plus"></i></b-button>
+          <b-button size="sm" class="ml-2" @click="addFilm"><i class="fas fa-plus"></i></b-button>
 
         </b-col>
       </b-form-row>
     </b-card>
 
     <b-form-row v-if="bigCardView">
-      <b-col lg="3" :key="film.id" cols="12" md="6" v-for="film in films">
-        <router-link to="/film" tag="div">
+      <b-col lg="3" :key="film.id" cols="12" md="6" v-for="film in boards">
           <b-card no-body
                   class="mb-2 text-left"
                   bg-variant="dark"
                   text-variant="light"
+                  @click="goToFilm(film.id)"
           >
             <div>
               <div class="rounded" style='padding-top: 150%; background-color: #e2d1c3;background-size:100% 100%;' :style="{'background-image': 'url(' + film.poster + ')'}">
@@ -81,7 +86,6 @@
               </div>
             </b-card-text>
           </b-card>
-        </router-link>
       </b-col>
     </b-form-row>
 
@@ -137,10 +141,35 @@ export default {
                 { id: 1, title: 'Back to the Future', poster: require('../../pictures/pic/1.jpg'), year: '1985', genre: 'Adventure | Comedy | Sci-Fi' },
                 { id: 2, title: 'The Godfather', poster: require('../../pictures/pic/2.jpg'), year: '1972', genre: 'Crime | Drama' },
                 { id: 3, title: 'Blade Runner 2049', poster: require('../../pictures/pic/3.jpg'), year: '2017', genre: 'Drama | Mystery | Sci-Fi' },
-            ]
+            ],
+            boards: []
         }
     },
+    mounted() {
+
+        let app = this;
+        this.$fireStore.collection("films")
+            .get()
+            .then(function(querySnapshot) {
+                  querySnapshot.forEach(function(doc) {
+                      app.boards.push({
+                          id: doc.id,
+                          title: doc.data().title,
+                          year: doc.data().year,
+                          poster: doc.data().poster,
+                          genre: doc.data().genre,
+                          text: doc.data().text
+                      });
+                  });
+            })
+            .catch(function(error) {
+            });
+
+    },
     methods: {
+        goToFilm(id) {
+            this.$router.push({name: 'film', params: {id: id}})
+        },
         setBigCardMode() {
             this.bigCardView = true;
             this.tableView = false;
@@ -148,19 +177,13 @@ export default {
         setTableMode() {
             this.tableView = true;
             this.bigCardView = false;
+        },
+        addFilm() {
+
         }
     }
 }
 </script>
 
 <style>
-  .rating {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    /*background-color: rgba(246, 247, 249, 0.51);*/
-    padding-left: 3px;
-    padding-right: 3px;
-    /*border: 1px solid rgba(246, 247, 249, 0.63);*/
-  }
 </style>

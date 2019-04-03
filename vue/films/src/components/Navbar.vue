@@ -15,13 +15,13 @@
 
         <b-navbar-nav class="ml-auto">
 
-            <b-dropdown variant="light" no-caret size="sm">
+            <b-dropdown variant="light" no-caret size="sm" v-if="logged">
               <template slot="button-content"><i class="fas fa-user"></i> User</template>
               <b-dropdown-item to="/profile">Profile</b-dropdown-item>
-              <b-dropdown-item >Logout</b-dropdown-item>
+              <b-dropdown-item @click="logout();">Logout</b-dropdown-item>
             </b-dropdown>
 
-          <b-button variant="light" size="sm" @click="openModal" class="ml-2">Login</b-button>
+          <b-button variant="light" size="sm" @click="openModal" class="ml-2" v-if="!logged">Login</b-button>
         </b-navbar-nav>
 
       </b-collapse>
@@ -37,9 +37,25 @@
 export default {
     components: {Login},
     name: 'navbar',
+    data() {
+        return {
+//            logged:
+        }
+    },
+    computed: {
+        logged: (app = this) => {
+            return app.$store.getters.logged;
+        }
+    },
     methods: {
         openModal() {
             this.$refs.login.show();
+        },
+        logout() {
+            let app = this;
+            this.$firebase.auth().signOut().then(() => {
+              app.$store.commit('setUser', null);
+            });
         }
     }
 }

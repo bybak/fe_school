@@ -12,12 +12,12 @@
         <b-col md="10">
           <b-card-body>
             <div class="d-flex justify-content-between align-items-center">
-              <h4 class="m-0">User name</h4>
+              <h4 class="m-0">{{userName}}</h4>
               <b-button size="sm" v-b-tooltip.hover title="Edit profile"><i class="fas fa-pencil-alt"></i></b-button>
             </div>
             <b-card-text>
               <hr class="mt-2 mb-2">
-              Unique ID: 1234567890
+              Unique ID: {{userId}}
             </b-card-text>
 
             <b-form-row class="text-white-50">
@@ -199,8 +199,16 @@ export default {
       return {
           tabIndex: 0,
           friendTab: true,
-          requestTab: false
+          requestTab: false,
+          user: null,
+          userName: '',
+          userId: '',
       }
+  },
+  mounted() {
+      this.user = this.$firebase.auth().currentUser;
+      this.userName = this.user.displayName;
+      this.userId = this.user.uid;
   },
   methods: {
       selectTab(type) {
@@ -212,7 +220,7 @@ export default {
             this.friendTab = false;
             this.requestTab = true;
         }
-      }
+      },
   }
 }
 </script>
