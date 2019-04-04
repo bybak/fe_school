@@ -8,12 +8,7 @@ import firebase from 'firebase';
 import Vuex from 'vuex';
 
 var config = {
-    apiKey: "AIzaSyDqVrMNZs8s3RrG7Ge5Gr-2svFOnJL8wpQ",
-    authDomain: "films-2c182.firebaseapp.com",
-    databaseURL: "https://films-2c182.firebaseio.com",
-    projectId: "films-2c182",
-    storageBucket: "films-2c182.appspot.com",
-    messagingSenderId: "474394274292"
+   
 };
 firebase.initializeApp(config);
 
