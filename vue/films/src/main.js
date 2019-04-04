@@ -8,7 +8,7 @@ import firebase from 'firebase';
 import Vuex from 'vuex';
 
 var config = {
-   
+
 };
 firebase.initializeApp(config);
 
@@ -29,7 +29,7 @@ import profile from './components/Profile.vue';
 
 const routes = [
     { path: '/', component: welcome },
-    { path: '/films', component: films },
+    { path: '/films', name: 'films', component: films },
     { path: '/films/film/:id', name: 'film', component: oneFilm, props: true },
     { path: '/profile', component: profile }
 ];
@@ -47,19 +47,6 @@ const router = new VueRouter({
 Vue.prototype.$firebase = firebase;
 Vue.prototype.$db = firebase.database();
 Vue.prototype.$fireStore = firebase.firestore();
-
-// var db = firebase.firestore();
-// db.collection("films").add({
-//     first: "Ada",
-//     last: "Lovelace",
-//     born: 1815
-// })
-//     .then(function(docRef) {
-//         console.log("Document written with ID: ", docRef.id);
-//     })
-//     .catch(function(error) {
-//         console.error("Error adding document: ", error);
-//     });
 
 let app = '';
 

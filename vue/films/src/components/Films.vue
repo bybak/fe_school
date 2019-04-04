@@ -7,14 +7,12 @@
       <b-form-row>
         <b-col cols="12" lg="4" class="pb-1 pt-1">
 
-          <b-dropdown id="dropdown-1" size="sm" text="Sorting" variant="light" class="w-100 text-left">
-            <b-dropdown-item><i class="fas fa-sort-amount-up"></i> Rating</b-dropdown-item>
-            <b-dropdown-item><i class="fas fa-sort-amount-down"></i> Rating</b-dropdown-item>
-            <b-dropdown-item><i class="fas fa-sort-amount-up"></i> Year</b-dropdown-item>
-            <b-dropdown-item><i class="fas fa-sort-amount-down"></i> Year</b-dropdown-item>
-            <b-dropdown-item><i class="fas fa-sort-amount-up"></i> Title</b-dropdown-item>
-            <b-dropdown-item><i class="fas fa-sort-amount-down"></i> Title</b-dropdown-item>
-          </b-dropdown>
+          <b-input-group size="sm" slot="append">
+            <b-form-select v-model="selected" :options="options" size="sm"></b-form-select>
+
+            <b-button slot="append" size="sm" @click="setOrderType('asc')" :pressed.sync="ascButtonPressed"><i class="fas fa-sort-amount-up"></i></b-button>
+            <b-button slot="append" size="sm" @click="setOrderType('desc')" :pressed.sync="descButtonPressed"><i class="fas fa-sort-amount-down"></i></b-button>
+          </b-input-group>
 
         </b-col>
 
@@ -22,17 +20,17 @@
           <b-form-row>
             <b-col cols="11">
               <b-input-group size="sm">
-                <b-form-input />
+                <b-form-input :placeholder="searchType" v-model="searchString"/>
 
                 <b-dropdown size="sm" text="Search type" slot="append" no-caret>
                   <template slot="button-content">
                     <i class="fas fa-sliders-h"></i>
                   </template>
-                  <b-dropdown-item>Title</b-dropdown-item>
-                  <b-dropdown-item>Genre</b-dropdown-item>
+                  <b-dropdown-item @click="setSearchType('title')">Title</b-dropdown-item>
+                  <b-dropdown-item @click="setSearchType('year')">Year</b-dropdown-item>
                 </b-dropdown>
 
-                <b-button slot="append"><i class="fas fa-search"></i></b-button>
+                <b-button slot="append" @click="search"><i class="fas fa-search"></i></b-button>
               </b-input-group>
             </b-col>
             <b-col cols="1" class="text-right">
@@ -55,7 +53,7 @@
     </b-card>
 
     <b-form-row v-if="bigCardView">
-      <b-col lg="3" :key="film.id" cols="12" md="6" v-for="film in boards">
+      <b-col lg="3" :key="film.id" cols="12" md="6" v-for="film in films">
           <b-card no-body
                   class="mb-2 text-left"
                   bg-variant="dark"
@@ -113,7 +111,12 @@ export default {
     data() {
         return {
             StarIcon: '',
-            selected: null,
+            selected: 'title',
+            options: [
+                { value: 'title', text: 'Title' },
+                { value: 'year', text: 'Year' },
+                { value: 'rating', text: 'Rating' },
+            ],
             bigCardView: true,
             tableView: false,
             fields: {
@@ -123,48 +126,52 @@ export default {
                 },
                 title: {
                     label: 'Title',
-                    sortable: true,
                     thClass: "border-top-0"
                 },
                 year: {
                     label: 'Year',
-                    sortable: true,
                     thClass: "border-top-0"
                 },
                 genre: {
                     label: 'Genre',
-                    sortable: false,
                     thClass: "border-top-0"
                 }
             },
-            films: [
-                { id: 1, title: 'Back to the Future', poster: require('../../pictures/pic/1.jpg'), year: '1985', genre: 'Adventure | Comedy | Sci-Fi' },
-                { id: 2, title: 'The Godfather', poster: require('../../pictures/pic/2.jpg'), year: '1972', genre: 'Crime | Drama' },
-                { id: 3, title: 'Blade Runner 2049', poster: require('../../pictures/pic/3.jpg'), year: '2017', genre: 'Drama | Mystery | Sci-Fi' },
-            ],
-            boards: []
+            films: [],
+            orderType: 'asc',
+            ascButtonPressed: true,
+            descButtonPressed: false,
+            searchType: 'title',
+            searchString: ''
         }
     },
     mounted() {
 
         let app = this;
-        this.$fireStore.collection("films")
+        this.$fireStore.collection("films").orderBy(this.selected, this.orderType)
             .get()
             .then(function(querySnapshot) {
                   querySnapshot.forEach(function(doc) {
-                      app.boards.push({
-                          id: doc.id,
-                          title: doc.data().title,
-                          year: doc.data().year,
-                          poster: doc.data().poster,
-                          genre: doc.data().genre,
-                          text: doc.data().text
-                      });
+
+                      let film = doc.data();
+                      film.id = doc.id;
+
+                      app.films.push(film);
                   });
             })
             .catch(function(error) {
             });
 
+    },
+    computed: {
+    },
+    watch: {
+        selected() {
+            this.getFilms();
+        },
+        orderType() {
+            this.getFilms();
+        }
     },
     methods: {
         goToFilm(id) {
@@ -180,6 +187,64 @@ export default {
         },
         addFilm() {
 
+        },
+        setOrderType(orderType) {
+            this.orderType = orderType;
+
+            if (orderType === 'asc') {
+                this.ascButtonPressed = true;
+                this.descButtonPressed = false;
+            }
+
+            if (orderType === 'desc') {
+                this.ascButtonPressed = false;
+                this.descButtonPressed = true;
+            }
+        },
+        setSearchType(searchType) {
+            this.searchType = searchType;
+        },
+        search() {
+            this.getFilms();
+        },
+        getFilms() {
+            let films = [];
+            let app = this;
+
+            let getFilmsFunction = '';
+            if (this.searchString === '') {
+                getFilmsFunction = this.$fireStore.collection("films").orderBy(this.selected, this.orderType);
+            }
+            else {
+                getFilmsFunction = this.$fireStore.collection("films").where(this.searchType, "==", this.searchString).orderBy(this.selected, this.orderType);
+            }
+
+//            console.log(getFilmsFunction);
+
+            getFilmsFunction
+                .get()
+                .then(function (querySnapshot) {
+
+                    console.log("!!!!!!");
+
+                    querySnapshot.forEach(function (doc) {
+
+                        let film = doc.data();
+                        film.id = doc.id;
+                        films.push(film);
+
+                    });
+
+                    console.log(films);
+                    app.films = films;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        },
+        test() {
+            console.log('test');
         }
     }
 }
