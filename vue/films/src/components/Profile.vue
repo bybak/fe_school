@@ -1,23 +1,33 @@
 <template>
   <div id="profile">
 
-    <h2 class="text-light">Profile</h2>
+    <h2 class="text-light">Profile: {{friends}}</h2>
 
     <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light">
       <b-row no-gutters>
         <b-col md="2" class="avatarContainer">
-          <img src="../../pictures/pic/1.jpg" class="card-img" alt="Card image">
-          <b-button size="sm" v-b-tooltip.hover title="Change avatar" class="changeAvatarButton"><i class="fas fa-pencil-alt"></i></b-button>
+          <img :src="user.avatar" class="card-img" alt="Card image">
+
+          <b-button size="sm" v-b-tooltip.hover title="Change avatar" class="changeAvatarButton btn-file">
+
+            <i class="fas fa-pencil-alt"></i>
+            <input type="file" id="file" ref="file" @change="changeAvatar">
+
+          </b-button>
+
+
         </b-col>
         <b-col md="10">
           <b-card-body>
             <div class="d-flex justify-content-between align-items-center">
-              <h4 class="m-0">{{userName}}</h4>
+              <h4 class="m-0">{{user.name}}</h4>
               <b-button size="sm" v-b-tooltip.hover title="Edit profile"><i class="fas fa-pencil-alt"></i></b-button>
             </div>
             <b-card-text>
               <hr class="mt-2 mb-2">
-              Unique ID: {{userId}}
+              Email: {{user.email}}
+              <br>
+              Unique ID: {{user.id}}
             </b-card-text>
 
             <b-form-row class="text-white-50">
@@ -77,16 +87,17 @@
           <div v-if="friendTab">
 
             <h5>Friends <small class="text-white-50">( 71 )</small></h5>
-            <b-row>
+
+            <b-row v-for="friend in friends">
               <b-col lg="1" cols="3">
-                <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 80px;">
+                <img class="rounded" :src="friend.avatar" alt="Card image" style="border-radius: 3px; max-height: 80px;">
               </b-col>
               <b-col lg="11" cols="9">
                 <div class="d-flex justify-content-between align-items-start">
                   <div>
-                    <div><span class="font-weight-bold">User Name</span></div>
+                    <div><span class="font-weight-bold">{{friend.name}}</span></div>
                     <div><span class="text-white-50">From: 01.01.2019</span></div>
-                    <b-button variant="outline-primary" size="sm">Go to the collection</b-button>
+                    <b-button variant="outline-primary" size="sm" @click="goToUserCollection(friend.id)">Go to the collection</b-button>
                   </div>
                   <a v-b-tooltip.hover title="Remove from friends" href="#"><i class="fas fa-times text-danger"></i></a>
                 </div>
@@ -191,26 +202,81 @@
 </template>
 
 <script>
-    import BCol from "bootstrap-vue/src/components/layout/col";
+    import databaseService from '../lib/databaseService';
 export default {
-    components: {BCol},
     name: 'profile',
   data() {
       return {
           tabIndex: 0,
           friendTab: true,
           requestTab: false,
-          user: null,
+//          user: {},
           userName: '',
           userId: '',
+//          friends: [],
+          friendsCount: 0
+      }
+  },
+  computed: {
+      user: (app = this) => {
+          let currentUser = app.$store.getters.getUser;
+
+          console.log('USER ID');
+          console.log(currentUser.id);
+
+//          if (currentUser.id) {
+//              const friends = databaseService.getFriendsForUser(currentUser.id).then((data) => {
+//                  console.log("PROFILE friends");
+//                  console.log(data);
+//
+//                  app.friends  = data;
+//
+//              });
+//
+//
+//          }
+
+//
+          return currentUser;
+      },
+      logged: (app = this) => {
+          return app.$store.getters.logged;
+      },
+      friends() {
+
+          if (this.user.id) {
+              let friends = [];
+              return databaseService.getFriendsForUser(this.user.id).then(data => {
+
+                  console.log("///////////");
+                  console.log(data);
+                  console.log("///////////");
+
+                  return data;
+              });
+
+
+
+          }
+          else {
+              return [];
+          }
       }
   },
   mounted() {
-      this.user = this.$firebase.auth().currentUser;
+
+
+
+//      console.log("PROFILE");
+//      console.log(user);
+
       this.userName = this.user.displayName;
       this.userId = this.user.uid;
   },
   methods: {
+      goToUserCollection(friendId) {
+          this.$router.push({name: 'films', params: {id: friendId}});
+      },
       selectTab(type) {
         if (type === 'friend') {
             this.friendTab = true;
@@ -221,6 +287,42 @@ export default {
             this.requestTab = true;
         }
       },
+      changeAvatar() {
+          let file = this.$refs.file.files[0];
+
+          let newImageName = this.generateToken();
+          let ext = '';
+
+          if (file.type === 'image/jpeg') {
+              ext = '.jpg';
+          }
+          else {
+              ext = '.jpg';
+          }
+          newImageName = newImageName + ext;
+
+          let app = this;
+          const StorageRef = this.$firebase.storage().ref().child('avatars/' + newImageName);
+          StorageRef.put(file).then(function(snapshot) {
+
+              app.$firebase.storage().ref().child('avatars/' + newImageName).getDownloadURL().then(function(url) {
+
+                  databaseService.updateUserAvatar(app.user.id, url);
+                  console.log(snapshot);
+                  console.log('Uploaded a blob or file!');
+
+              });
+
+          });
+      },
+      generateToken() {
+        var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var token = '';
+        for(var i = 0; i < 15; i++) {
+            token += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return token;
+    }
   }
 }
 </script>
@@ -237,4 +339,17 @@ export default {
     bottom: 10px;
     left: 10px;
   }
+
+  .btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+  }
+
 </style>

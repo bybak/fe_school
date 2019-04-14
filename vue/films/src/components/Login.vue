@@ -100,97 +100,95 @@
 </template>
 
 <script>
-export default {
-  name: 'login',
-  data() {
-      return {
-          showModal: false,
-          showLogin: true,
-          showRegister: false,
-          modalTitle: 'Login',
-          email: '',
-          password: '',
-          name: '',
-          confirmPassword: '',
-          showDismissibleAlert: 0,
-          alertMessage: ''
-      }
-  },
-  mounted() {
+    import databaseService from '../lib/databaseService';
 
-  },
-  methods: {
-      register() {
-          if (this.password !== this.confirmPassword) {
-              this.showAlert({code: '00', message: 'Passwords should be the same'});
-              return;
+    export default {
+      name: 'login',
+      data() {
+          return {
+              showModal: false,
+              showLogin: true,
+              showRegister: false,
+              modalTitle: 'Login',
+              email: '',
+              password: '',
+              name: '',
+              confirmPassword: '',
+              showDismissibleAlert: 0,
+              alertMessage: ''
           }
+      },
+      mounted() {
 
-          let app = this;
-          this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
-              function (user) {
-                  app.$store.commit('setUser', user);
-
-                  user = app.$firebase.auth().currentUser;
-                  user.updateProfile({
-                      displayName: app.name,
-//                      photoURL: "https://example.com/jane-q-user/profile.jpg"
-                  }).then(function() {
-                      // Update successful.
-                  }).catch(function(error) {
-                      // An error happened.
-                  });
-
-                  app.$db.ref('users').child(user.uid).set({
-                      id: user.uid,
-                      name: app.name,
-                      email: app.email,
-                  });
-
-                  app.hide();
-              },
-              function (error) {
-                app.showAlert(error);
+      },
+      methods: {
+          register() {
+              if (this.password !== this.confirmPassword) {
+                  this.showAlert({code: '00', message: 'Passwords should be the same'});
+                  return;
               }
-          );
-      },
-      login() {
-          let app = this;
-          this.$firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
-              function (user) {
-                  app.$store.commit('setUser', user);
-                  app.hide();
-              },
-              function (error) {
-                  app.showAlert(error);
-              }
-          );
-      },
-      showAlert(error) {
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          this.alertMessage = '[' + errorCode + '] ' + errorMessage;
-          this.showDismissibleAlert = 3;
-      },
-      show() {
-          this.showModal = true;
-      },
-      hide() {
-          this.showModal = false;
-      },
-      switchPanel() {
-          this.showLogin = !this.showLogin;
-          this.showRegister = !this.showRegister;
 
-          if (this.modalTitle === 'Login') {
-              this.modalTitle = 'Register';
-              return;
+              let app = this;
+              this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
+                  function (user) {
+
+                      let userObject = {
+                          id: user.user.uid,
+                          name: app.name,
+                          email: app.email
+                      };
+
+                      app.$store.commit('setUser', userObject);
+                      databaseService.registerUser(userObject);
+
+                      app.hide();
+                  },
+                  function (error) {
+                    app.showAlert(error);
+                  }
+              );
+          },
+          login() {
+              let app = this;
+              this.$firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
+                  function (user) {
+
+                      databaseService.getUserById(user.user.uid).then((data) => {
+                          app.$store.commit('setUser', data);
+                          app.hide();
+                      });
+
+                  },
+                  function (error) {
+                      app.showAlert(error);
+                  }
+              );
+          },
+          showAlert(error) {
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              this.alertMessage = '[' + errorCode + '] ' + errorMessage;
+              this.showDismissibleAlert = 3;
+          },
+          show() {
+              this.showModal = true;
+          },
+          hide() {
+              this.showModal = false;
+          },
+          switchPanel() {
+              this.showLogin = !this.showLogin;
+              this.showRegister = !this.showRegister;
+
+              if (this.modalTitle === 'Login') {
+                  this.modalTitle = 'Register';
+                  return;
+              }
+
+              this.modalTitle = 'Login';
           }
-
-          this.modalTitle = 'Login';
       }
-  }
-}
+    }
 </script>
 
 <style>

@@ -36,7 +36,6 @@
                   </b-col>
                 </b-form-row>
 
-                <!--<hr class="mt-1 mb-1">-->
               </div>
             </b-card-text>
 
@@ -82,6 +81,7 @@
                             :border-width="0"
                             text-class="custom-text"
                             :show-rating="false"
+                            v-model="film.rating"
                     ></fa-rating>
 
                   </b-col>
@@ -113,54 +113,32 @@
                 max-rows="6"
                 size="sm"
         />
-        <b-button size="sm" variant="primary" class="mt-2">Publish</b-button>
+        <b-button size="sm" variant="primary" class="mt-2" @click="addComment">Publish</b-button>
 
-        <hr class="bg-secondary">
-
-        <b-form-row>
-          <b-col lg="1" cols="3">
-            <img class="rounded" src="../../pictures/pic/2.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px; max-width: 100%">
-          </b-col>
-          <b-col lg="11" cols="9">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
-              </div>
-              <div>
-                <b-button variant="outline-success" size="sm" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
-                <b-button variant="outline-danger" size="sm" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
-              </div>
-            </div>
-            <hr class="mt-2 mb-2">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at sagittis enim. Sed maximus, justo a dapibus rhoncus, tellus velit ullamcorper metus, sit amet imperdiet metus libero sit amet nisl. Etiam quis lectus sed nisl interdum suscipit. Pellentesque auctor sodales leo, sed ultrices mi. Donec maximus interdum nibh, non iaculis tellus bibendum in. Integer ultricies mi ut erat vulputate, in rutrum felis sodales. Pellentesque cursus feugiat sapien, id condimentum orci faucibus et. Cras rhoncus elit velit, quis euismod lectus scelerisque in. Aenean vel metus a lectus sagittis cursus sed ac massa.
-            </p>
-          </b-col>
-        </b-form-row>
-
-        <hr class="bg-secondary">
-
-        <b-form-row>
-          <b-col lg="1" cols="3">
-            <img class="rounded" src="../../pictures/pic/1.jpg" alt="Card image" style="border-radius: 3px; max-height: 120px; max-width: 100%">
-          </b-col>
-          <b-col lg="11" cols="9">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <span class="font-weight-bold">User Name </span><small class="text-white-50">[ 01.01.2019 ]</small>
-              </div>
-              <div>
-                <b-button variant="outline-success" size="sm" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> 500</b-button>
-                <b-button variant="outline-danger" size="sm" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> 33</b-button>
-              </div>
-            </div>
-            <hr class="mt-2 mb-2">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at sagittis enim. Sed maximus, justo a dapibus rhoncus, tellus velit ullamcorper metus, sit amet imperdiet metus libero sit amet nisl. Etiam quis lectus sed nisl interdum suscipit. Pellentesque auctor sodales leo, sed ultrices mi. Donec maximus interdum nibh, non iaculis tellus bibendum in. Integer ultricies mi ut erat vulputate, in rutrum felis sodales. Pellentesque cursus feugiat sapien, id condimentum orci faucibus et. Cras rhoncus elit velit, quis euismod lectus scelerisque in. Aenean vel metus a lectus sagittis cursus sed ac massa.
-            </p>
-          </b-col>
-        </b-form-row>
-
+        <!-- COMMENTS -->
+        <div v-for="comment in commentsArray">
+          <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm">
+            <b-form-row>
+              <b-col lg="1" cols="3">
+                <img class="rounded" :src="comment.user.avatar" alt="Card image" style="border-radius: 3px; max-height: 120px; max-width: 100%">
+              </b-col>
+              <b-col lg="11" cols="9" class="p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="font-weight-bold">{{comment.user.name}} </span><small class="text-white-50">[ {{comment.date}} ]</small>
+                  </div>
+                  <div>
+                    <b-button variant="outline-success" size="sm" class="border-dark" @click="setCardMode()"><i class="fas fa-thumbs-up"></i> {{comment.like}}</b-button>
+                    <b-button variant="outline-danger" size="sm" class="border-dark" @click="setTableMode()"><i class="fas fa-thumbs-down"></i> {{comment.dislike}}</b-button>
+                  </div>
+                </div>
+                <p>
+                    {{comment.comment}}
+                </p>
+              </b-col>
+            </b-form-row>
+          </b-card>
+        </div>
 
       </b-card-body>
     </b-card>
@@ -170,29 +148,47 @@
 
 <script>
 import Star from 'vue-rate-it/glyphs/star';
+import databaseService from '../lib/databaseService';
+import dayjs from 'dayjs';
 
 export default {
     name: 'oneFilm',
-    created(){
-        this.StarIcon = Star
-    },
     props: ['id'],
     created() {
 
-      const app = this;
-      this.$fireStore.collection("films").doc(this.id).get().then(function(doc) {
-          if (doc.exists) {
-              app.film = doc.data();
-              console.log("Document data:", doc.data());
-          } else {
-              // doc.data() will be undefined in this case
-              console.log("No such document!");
-          }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
-      });
+        this.StarIcon = Star;
 
+        databaseService.getOneFilm(this.id).then(data => {
+            this.film = data;
+        });
 
+    },
+    mounted() {
+        this.subscribeDynamicComments();
+    },
+    methods: {
+        addComment() {
+            const user = this.$store.getters.getUser;
+
+            let commentObject = {
+                filmId: this.id,
+                userId: user.id,
+                comment: this.comment,
+                date: dayjs().format('DD/MM/YYYY'),
+                like: 0,
+                dislike: 0,
+            };
+
+            databaseService.addComment(commentObject);
+
+        },
+        subscribeDynamicComments() {
+            databaseService.getDynamicComments(this.id, this.getDynamicComments);
+        },
+        getDynamicComments: function(comments) {
+            console.log(comments);
+            this.commentsArray = comments;
+        }
     },
 
     computed: {
@@ -203,6 +199,7 @@ export default {
             StarIcon: '',
             film: '',
             comment: '',
+            commentsArray: []
         }
     }
 }

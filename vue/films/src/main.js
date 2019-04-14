@@ -6,11 +6,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Raters from 'vue-rate-it';
 import firebase from 'firebase';
 import Vuex from 'vuex';
-
-var config = {
-
-};
-firebase.initializeApp(config);
+import Lodash from 'lodash';
+import store from './vuexStore';
 
 import VueRouter from 'vue-router'
 
@@ -28,8 +25,8 @@ import oneFilm from './components/OneFilm.vue';
 import profile from './components/Profile.vue';
 
 const routes = [
-    { path: '/', component: welcome },
-    { path: '/films', name: 'films', component: films },
+    { path: '/', name: 'welcome', component: welcome },
+    { path: '/films/:id', name: 'films', component: films, props: true},
     { path: '/films/film/:id', name: 'film', component: oneFilm, props: true },
     { path: '/profile', component: profile }
 ];
@@ -39,51 +36,20 @@ const router = new VueRouter({
 });
 
 // router.beforeEach((to, from, next) => {
-//
-//
 //     next();
 // });
 
 Vue.prototype.$firebase = firebase;
 Vue.prototype.$db = firebase.database();
 Vue.prototype.$fireStore = firebase.firestore();
+Vue.prototype.$lodash = Lodash;
 
 let app = '';
 
 firebase.auth().onAuthStateChanged(() => {
     if (!app) {
 
-        const currentUser = firebase.auth().currentUser;
-
-        let logged = false;
-        if (currentUser) {
-            logged = true;
-        }
-
-        const store = new Vuex.Store({
-            state: {
-                user: currentUser,
-                logged: logged
-            },
-            getters: {
-                getUser: state => {
-                    return state.user;
-                },
-                logged: state => {
-                    return state.logged;
-                }
-            },
-            mutations: {
-                setUser (state, currentUser) {
-                    state.user = currentUser;
-                    if (currentUser) {
-                        state.logged = true;
-                    } else {
-                        state.logged = false;
-                    }
-                }
-            }
-        });
+        store.dispatch('setCurrentUser');
 
         app = new Vue({
             store,
