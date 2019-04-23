@@ -8,6 +8,8 @@ import firebase from 'firebase';
 import Vuex from 'vuex';
 import Lodash from 'lodash';
 import store from './vuexStore';
+import databaseService from './lib/databaseService';
+import VuePaginate from 'vue-paginate'
 
 import VueRouter from 'vue-router'
 
@@ -18,6 +20,7 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 Vue.use(firebase);
 Vue.use(Vuex);
+Vue.use(VuePaginate);
 
 import films from './components/Films.vue';
 import welcome from './components/Welcome.vue';
@@ -49,12 +52,24 @@ let app = '';
 firebase.auth().onAuthStateChanged(() => {
     if (!app) {
 
-        store.dispatch('setCurrentUser');
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser) {
+            databaseService.getUserById(currentUser.uid).then((data) => {
+                store.commit('setUser', data);
 
-        app = new Vue({
-            store,
-            router,
-            render: h => h(App),
-        }).$mount('#app');
+                app = new Vue({
+                    store,
+                    router,
+                    render: h => h(App),
+                }).$mount('#app');
+            });
+        } else {
+            app = new Vue({
+                store,
+                router,
+                render: h => h(App),
+            }).$mount('#app');
+        }
+
     }
 });

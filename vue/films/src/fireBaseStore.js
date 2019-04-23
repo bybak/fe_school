@@ -5,4 +5,5 @@ firebaseService.initializeApp(config.fireBase);
 
 const fireBaseStore = firebaseService.firestore();
 
+export {firebaseService};
 export default fireBaseStore;

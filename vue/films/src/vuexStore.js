@@ -19,10 +19,10 @@ const store = new Vuex.Store({
         }
     },
     mutations: {
-        setUser (state, currentUser) {
-            if (currentUser) {
+        setUser (state, user) {
+            if (user) {
                 state.logged = true;
-                state.user = currentUser;
+                state.user = user;
             } else {
                 state.logged = false;
                 state.user = {};
@@ -31,16 +31,7 @@ const store = new Vuex.Store({
     },
     actions: {
         setCurrentUser(context) {
-            const currentUser = firebase.auth().currentUser;
 
-            if (currentUser) {
-                databaseService.getUserById(currentUser.uid).then((data) => {
-                    context.commit('setUser', data);
-                });
-            }
-            else {
-                context.commit('setUser', null);
-            }
 
         },
 

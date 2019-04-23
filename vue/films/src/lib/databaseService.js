@@ -1,7 +1,55 @@
 import fireBaseStore from '../fireBaseStore';
 import Lodash from 'lodash';
+import dayjs from 'dayjs';
+import {firebaseService} from '../fireBaseStore';
 
 export default class databaseService {
+
+    static getFilms(userId, callback) {
+        fireBaseStore.collection("films").where("user", "==", userId)
+            .onSnapshot(function(querySnapshot) {
+                let films = [];
+                let changeType = '';
+
+                querySnapshot.docChanges().forEach(function(change) {
+                    changeType = change.type;
+
+                    let film = change.doc.data();
+                    film.id = change.doc.id;
+                    film.show = true;
+
+                    film.rating = 0;
+                    if (film.ratingArray.length !== 0) {
+                        film.rating = Lodash.sum(film.ratingArray) / film.ratingArray.length;
+                    }
+
+                    films.push(film);
+                });
+
+                callback(films, changeType);
+            });
+    }
+
+    static setFilmFavourite(filmId, state) {
+        fireBaseStore.collection("films").doc(filmId).update({
+            favourite: state,
+        })
+            .then(function() {
+            })
+            .catch(function(error) {
+            });
+    }
+
+    static setFilmRating(filmId, ratingArray, votedUsers) {
+        fireBaseStore.collection("films").doc(filmId).update({
+            ratingArray: ratingArray,
+            votedUsers: votedUsers
+        })
+            .then(function() {
+            })
+            .catch(function(error) {
+            });
+    }
 
     static getOneFilm(filmId) {
 
@@ -76,8 +124,6 @@ export default class databaseService {
     static addComment(comment) {
         const commentRef = fireBaseStore.collection("comments");
 
-        console.log(commentRef);
-
         return commentRef.add(comment)
             .then(function(data) {
                 console.log("New comment added");
@@ -93,14 +139,57 @@ export default class databaseService {
         fireBaseStore.collection("comments").where("filmId", "==", filmId)
             .onSnapshot(function(querySnapshot) {
                 let comments = [];
-                querySnapshot.forEach(function(doc) {
-                    let oneComment = doc.data();
-                    app.getUserById(oneComment.userId).then((data) => {
-                        oneComment.user = data;
-                        comments.push(oneComment);
-                    });
+                let changeType = '';
+                querySnapshot.docChanges().forEach(function(change) {
+                    changeType = change.type;
+                    let oneComment = change.doc.data();
+                    oneComment.id = change.doc.id;
+                    comments.push(oneComment);
                 });
-                callback(comments);
+
+                new Promise(function(resolve, reject) {
+                    comments.forEach(function (oneComment, index) {
+                        oneComment.user = app.getUserById(oneComment.userId).then((data) => {
+                            comments[index].user = data;
+                        });
+                    });
+
+                    resolve(comments);
+                }).then((data) => {
+                    callback(data, changeType);
+                });
+                // callback(comments, changeType);
+            });
+    }
+
+    // Delete comment
+    static deleteComment(commentId) {
+        fireBaseStore.collection("comments").doc(commentId).delete().then(function() {
+            console.log("Comment successfully deleted!");
+        }).catch(function(error) {
+            console.error("Error deleted comment: ", error);
+        });
+    }
+
+    // Like or Dislike comment
+    static likeDislikeComment(commentId, userId, type) {
+
+        let updateArrayObject = {};
+        if (type === 'like') {
+            updateArrayObject = {like: firebaseService.firestore.FieldValue.arrayUnion(userId)};
+        }
+        else {
+            updateArrayObject = {dislike: firebaseService.firestore.FieldValue.arrayUnion(userId)};
+        }
+
+        fireBaseStore.collection("comments").doc(commentId).update(
+            updateArrayObject
+        )
+            .then(function() {
+                console.log("Comment successfully liked/disliked!");
+            })
+            .catch(function(error) {
+                console.error("Error liked/disliked comment: ", error);
             });
     }
 
@@ -116,38 +205,160 @@ export default class databaseService {
             });
     }
 
-    static getFriendsForUser(userId) {
-
-        let friends = [];
+    // Get user's friends
+    static getFriendsForUser(userId, callback) {
         const app = this;
 
         return fireBaseStore.collection("friends").where("userId", "==", userId)
-            .get()
-            .then(function(querySnapshot) {
+            .onSnapshot(function(querySnapshot) {
+                let friends = [];
+
                 querySnapshot.forEach(function(doc) {
-
-                    let friendId = doc.data().friendId;
-                    let friend = app.getUserById(friendId).then((data) => {
-                        friends.push(data);
+                    let friend = doc.data();
+                    app.getUserById(doc.data().friendId).then((data) => {
+                        friend.user = data;
+                        friends.push(friend);
                     });
-
-
-
-
-
                 });
 
+                callback(friends);
+            });
+    }
 
-                console.log("GET FRIENDS");
-                console.log(friends);
-                console.log('---------')
+    // Get user's requests
+    static getRequests(userId, callback) {
+        const app = this;
 
-                return friends;
+        return fireBaseStore.collection("requests").where("userId", "==", userId)
+            .onSnapshot(function(querySnapshot) {
+                let requests = [];
 
+                querySnapshot.forEach(function(doc) {
+                    let request = doc.data();
+                    app.getUserById(request.friendId).then((data) => {
+                        request.user = data;
+                        requests.push(request);
+                    });
+                });
 
+                callback(requests);
+            });
+    }
+
+    // Send request for user
+    static sendRequest(userId, friendId) {
+        const requestsRef = fireBaseStore.collection("requests");
+
+        const outRequest = {
+            userId: userId,
+            friendId: friendId,
+            type: 'out',
+            date: dayjs().format('DD/MM/YYYY')
+        };
+
+        requestsRef.add(outRequest)
+            .then(function(data) {
+                console.log("Out request setted");
             })
             .catch(function(error) {
+                console.error("Error out request: ", error);
             });
+
+        const inRequest = {
+            userId: friendId,
+            friendId: userId,
+            type: 'in',
+            date: dayjs().format('DD/MM/YYYY')
+        };
+
+        requestsRef.add(inRequest)
+            .then(function(data) {
+                console.log("In request setted");
+            })
+            .catch(function(error) {
+                console.error("Error in request: ", error);
+            });
+
+    }
+
+    // Accept friend request
+    static acceptFriend(userId, friendId) {
+        const friendsRef = fireBaseStore.collection("friends");
+
+        const setRecordForUser = {
+            userId: userId,
+            friendId: friendId,
+            since: dayjs().format('DD/MM/YYYY')
+        };
+
+        friendsRef.add(setRecordForUser)
+            .then(function(data) {
+                console.log("Friend added");
+            })
+            .catch(function(error) {
+                console.error("Error out request: ", error);
+            });
+
+        const setRecordForFriend = {
+            userId: friendId,
+            friendId: userId,
+            since: dayjs().format('DD/MM/YYYY')
+        };
+
+        friendsRef.add(setRecordForFriend)
+            .then(function(data) {
+                console.log("User for Friend added");
+            })
+            .catch(function(error) {
+                console.error("Error out request: ", error);
+            });
+
+
+        this.deleteFriendRequest(userId, friendId);
+
+    }
+
+    // Delete friend request
+    static deleteFriendRequest(userId, friendId) {
+
+        const requestsRef = fireBaseStore.collection("requests");
+
+        requestsRef.where("userId", "==", userId).where("friendId", "==", friendId).get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                doc.ref.delete().then(function () {
+                    console.log('Request from user deleted');
+                });
+            });
+        });
+
+        requestsRef.where("userId", "==", friendId).where("friendId", "==", userId).get().then(function (querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                doc.ref.delete().then(function () {
+                    console.log('Request from friend deleted');
+                });
+            });
+        });
+    }
+
+    // Delete from friends
+    static deleteFromFriends(userId, friendId) {
+        const friendsRef = fireBaseStore.collection("friends");
+
+        friendsRef.where("userId", "==", userId).where("friendId", "==", friendId).get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                doc.ref.delete().then(function () {
+                    console.log('Friend deleted');
+                });
+            });
+        });
+
+        friendsRef.where("userId", "==", friendId).where("friendId", "==", userId).get().then(function (querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                doc.ref.delete().then(function () {
+                    console.log('User from friend deleted');
+                });
+            });
+        });
     }
 
 }
