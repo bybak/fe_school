@@ -21,7 +21,9 @@
           <b-form-row>
             <b-col cols="11">
               <b-input-group size="sm">
-                <b-form-input :placeholder="searchType" v-model="searchString"/>
+
+                <b-form-input :placeholder="searchType" v-model="searchString" v-if="isSearchString"/>
+                <b-form-select v-model="selectedGenres" :options="genres" v-if="!isSearchString" :select-size="1" @change="filterFilms()"></b-form-select>
 
                 <b-dropdown size="sm" text="Search type" slot="append" no-caret>
                   <template slot="button-content">
@@ -29,6 +31,7 @@
                   </template>
                   <b-dropdown-item @click="setSearchType('title')">Title</b-dropdown-item>
                   <b-dropdown-item @click="setSearchType('year')">Year</b-dropdown-item>
+                  <b-dropdown-item @click="setSearchType('genre')">Genre</b-dropdown-item>
                 </b-dropdown>
 
               </b-input-group>
@@ -78,7 +81,7 @@
                     </div>
                     <b-card-text class="m-2">
                       <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">{{film.title}}</h6>
+                        <h6 class="mb-0 text-elipse-oveflow">{{film.title}}</h6>
 
                         <fa-rating
                                 :item-size="15"
@@ -96,8 +99,8 @@
                       </div>
                       <div>
                         <div class="d-flex justify-content-between align-items-center">
-                          <small class="text-white-50">{{film.year}}, {{film.genre}}</small>
-                          <i class="fas fa-heart fa-sm like" :class="{active : film.favourite}" @click="setToFavourite(film.id, film.favourite)"></i>
+                          <small class="text-white-50 small-genres text-elipse-oveflow">{{film.year}}, {{formatGenresForFilm(film.genre)}}</small>
+                          <i class="fas fa-heart fa-sm like" :class="{active : film.favourite[user.id]}" @click="setToFavourite(film, film.favourite[user.id])"></i>
                         </div>
                       </div>
                     </b-card-text>
@@ -113,44 +116,90 @@
                     :show-step-links="true"
                     :limit="3"
                     :hide-single-page="true"
-                    v-if="filmCount > 4"
             ></paginate-links>
         </b-container>
 
     </div>
 
-    <b-form-row v-if="tableView && userHasFilms">
-      <b-col>
-        <b-table selectable dark hover :items="films" :fields="fields" class="rounded" @row-clicked="goToFilmFromTable">
+    <div v-if="tableView && userHasFilms">
 
-          <template slot="poster" slot-scope="data">
-            <img :src="data.item.poster" alt="Card image" style="border-radius: 3px; max-height: 70px;">
-          </template>
+        <paginate
+                name="filmsCards"
+                :list="films"
+                :per="4"
+                tag="div"
+        >
 
-          <template slot="rating" slot-scope="data">
-            <fa-rating
-                    :item-size="15"
-                    :glyph="StarIcon"
-                    inactive-color="#59616a"
-                    active-color="#F6F7F9"
-                    :border-width="0"
-                    text-class="custom-text"
-                    :show-rating="false"
-                    v-model="data.item.rating"
-                    @rating-selected="setRating(data.item.rating, data.item.id)"
-                    :read-only="checkForUserRating(data.item)"
-            ></fa-rating>
-          </template>
+            <b-form-row>
+                <b-col lg="12" :key="film.id" cols="12" md="12" v-for="film in paginated('filmsCards')" v-if="film.show">
+                    <b-card no-body
+                            class="mb-2 text-left filmCard"
+                            bg-variant="dark"
+                            text-variant="light"
+                            @mouseover="cardMouseOver(film.id)"
+                            @mouseout="cardMouseOut"
+                            :class="{'shadow': isHovered(film.id)}"
+                            @click="goToFilm(film.id)"
+                    >
+                        <b-card-text class="">
+                            <b-form-row>
+                                <b-col lg="1" cols="2" md="1">
+                                    <div class="rounded" style='padding-top: 150%; background-color: #313a43;background-size:100% 100%;' :style="{'background-image': 'url(' + film.poster + ')'}">
+                                    </div>
+                                </b-col>
+                                <b-col lg="3" cols="3" md="3" class="d-flex align-items-center">
+                                    <span class="ml-2 mb-0 text-elipse-oveflow">{{film.title}}</span>
+                                </b-col>
+                                <b-col lg="2" cols="1" md="2" class="d-flex align-items-center">
+                                    <small class="text-elipse-oveflow">{{film.year}}</small>
+                                </b-col>
+                                <b-col lg="4" cols="3" md="4" class="d-flex align-items-center">
+                                    <small class="text-elipse-oveflow">{{formatGenresForFilm(film.genre)}}</small>
+                                </b-col>
+                                <b-col lg="1" cols="2" md="1" class="d-flex justify-content-center align-items-center">
+                                    <fa-rating
+                                            :item-size="15"
+                                            :glyph="StarIcon"
+                                            inactive-color="#59616a"
+                                            active-color="#F6F7F9"
+                                            :border-width="0"
+                                            text-class="custom-text"
+                                            :show-rating="false"
+                                            v-model="film.rating"
+                                            @rating-selected="setRating(film.rating, film.id)"
+                                            :read-only="checkForUserRating(film)"
+                                    ></fa-rating>
+                                </b-col>
+                                <b-col lg="1" cols="1" md="1" class="d-flex justify-content-center align-items-center">
+                                    <i class="fas fa-heart fa-sm like" :class="{active : film.favourite[user.id]}" @click="setToFavourite(film, film.favourite[user.id])"></i>
+                                </b-col>
+                            </b-form-row>
+                        </b-card-text>
+                    </b-card>
+                </b-col>
+            </b-form-row>
 
-          <template slot="favourite" slot-scope="data" class="text-center">
-            <i class="fas fa-heart fa-sm like" :class="{active : data.item.favourite}" @click="setToFavourite(data.item.id, data.item.favourite)"></i>
-          </template>
+        </paginate>
 
-        </b-table>
-      </b-col>
-    </b-form-row>
+        <b-container class="pagination-container mt-3">
+            <paginate-links
+                    for="filmsCards"
+                    class="pagination"
+                    :show-step-links="true"
+                    :limit="3"
+                    :hide-single-page="true"
+            ></paginate-links>
+        </b-container>
 
-    <h1 v-if="!userHasFilms" class="pt-3 text-light">There are no films yet :(</h1>
+
+    </div>
+
+    <div v-if="!userHasFilms">
+        <div v-if="!filmsLoaded">
+            LOADING
+        </div>
+        <h1 class="pt-3 text-light" v-else>There are no films yet :(</h1>
+    </div>
 
   </div>
 </template>
@@ -178,37 +227,7 @@ export default {
             ],
             bigCardView: true,
             tableView: false,
-            fields: {
-                poster: {
-                    label: 'Poster',
-                    thClass: "border-top-0",
-                },
-                title: {
-                    label: 'Title',
-                    thClass: "border-top-0",
-                    tdClass: 'align-middle'
-                },
-                year: {
-                    label: 'Year',
-                    thClass: "border-top-0",
-                    tdClass: 'align-middle'
-                },
-                genre: {
-                    label: 'Genre',
-                    thClass: "border-top-0",
-                    tdClass: 'align-middle'
-                },
-                rating: {
-                    label: 'Rating',
-                    thClass: "border-top-0",
-                    tdClass: 'align-middle'
-                },
-                favourite: {
-                    label: 'Favourite',
-                    thClass: "border-top-0 text-center",
-                    tdClass: 'text-center align-middle'
-                }
-            },
+
             films: [],
             orderType: 'asc',
             ascButtonPressed: true,
@@ -219,17 +238,15 @@ export default {
             favouriteButtonPressed: false,
             hoveredCard: null,
             user: {},
-            filmCount: 0
+            allFilms: {},
+            genres: [],
+            selectedGenres: '',
+            filmsLoaded: false
         }
     },
     mounted() {
 
-        databaseService.getFilms(this.id, this.getFilms);
-
-        this.user = this.$store.getters.getUser;
-        if (this.user.id === this.id) {
-            this.myCollection = true;
-        }
+        this.init();
 
     },
     computed: {
@@ -240,6 +257,13 @@ export default {
 
             return true;
         },
+        isSearchString() {
+            if (this.searchType === 'title' || this.searchType === 'year') {
+                return true;
+            }
+
+            return false;
+        }
     },
     watch: {
         selected() {
@@ -250,10 +274,28 @@ export default {
         },
         searchString() {
             this.filterFilms();
+        },
+        id() {
+            this.init();
         }
     },
     methods: {
+        init() {
+            databaseService.getFilms(this.id, this.getFilms);
+            databaseService.getGenres().then(data => {
+                this.genres =  data;
+            });
+
+            this.user = this.$store.getters.getUser;
+            if (this.user.id === this.id) {
+                this.myCollection = true;
+            }
+        },
+        formatGenresForFilm(genres) {
+            return genres.join(' | ');
+        },
         getFilms(films, changeType) {
+            this.filmsLoaded = true;
             if (films.length > 1) {
                 this.films = films;
             }
@@ -275,8 +317,8 @@ export default {
                 });
             }
 
-            this.filmCount = this.films.length;
             this.sortFilms();
+            this.allFilms = this.films;
         },
         checkForUserRating(film) {
             return film.votedUsers.includes(this.user.id);
@@ -293,9 +335,9 @@ export default {
         goToFilmFromTable(record, index) {
             this.goToFilm(record.id);
         },
-        setToFavourite(filmId, currentState) {
+        setToFavourite(film, currentState) {
             event.stopPropagation();
-            databaseService.setFilmFavourite(filmId, !currentState);
+            databaseService.setFilmFavourite(film, this.user.id, !currentState);
         },
         setRating(rating, filmId) {
             event.stopPropagation();
@@ -345,20 +387,30 @@ export default {
         },
         sortFilms() {
             this.films = this.$lodash.orderBy(this.films, [this.selected], [this.orderType]);
+            this.allFilms = this.$lodash.orderBy(this.allFilms, [this.selected], [this.orderType]);
         },
 
         filterFilms() {
             const app = this;
-            let localFilmCount = 0;
-            this.films = this.films.map(function(oneFilm) {
+            let localFilmArray = [];
+            this.allFilms.map(function(oneFilm) {
 
-                const objValue = app.$lodash.toLower(oneFilm[app.searchType]);
-                const searchValue = app.$lodash.toLower(app.searchString);
+                let filterResult = false;
+                if (app.isSearchString) {
+                    const objValue = app.$lodash.toLower(oneFilm[app.searchType]);
+                    const searchValue = app.$lodash.toLower(app.searchString);
 
-                let filterResult = app.$lodash.includes(objValue, searchValue);
+                    filterResult = app.$lodash.includes(objValue, searchValue);
+                } else {
+                    if (app.selectedGenres !== '') {
+                        filterResult = app.$lodash.includes(oneFilm.genre, app.selectedGenres);
+                    } else {
+                        filterResult = true;
+                    }
+                }
 
                 if (app.favouriteButtonPressed) {
-                    filterResult = filterResult && (oneFilm.favourite === true);
+                    filterResult = filterResult && (oneFilm.favourite[app.user.id] === true);
                 }
 
                 if (!filterResult) {
@@ -366,13 +418,12 @@ export default {
                 }
                 else {
                     oneFilm.show = true;
-                    localFilmCount ++;
+                    localFilmArray.push(oneFilm);
                 }
 
-                return oneFilm;
             });
 
-            this.filmCount = localFilmCount;
+            this.films = localFilmArray;
         }
 
     }
@@ -431,4 +482,12 @@ export default {
          }
 
   /deep/ .pagination li:hover:not(.active) {background-color: #727a84;}
+    .text-elipse-oveflow {
+        overflow:hidden;
+        white-space:nowrap;
+        text-overflow: ellipsis;
+    }
+    .small-genres {
+        max-width: 90%;
+    }
 </style>

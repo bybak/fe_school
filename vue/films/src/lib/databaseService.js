@@ -5,6 +5,24 @@ import {firebaseService} from '../fireBaseStore';
 
 export default class databaseService {
 
+    // Get genres
+    static getGenres() {
+        return fireBaseStore.collection("genres")
+            .get()
+            .then(function(querySnapshot) {
+                let genres = [];
+                genres.push({value: '', text: 'Please select genre'});
+                querySnapshot.forEach(function(doc) {
+                    let genre = doc.data();
+                    genres.push({value: genre.genreName, text: genre.genreName});
+                });
+
+                return genres;
+            })
+            .catch(function(error) {
+            });
+    }
+
     static getFilms(userId, callback) {
         fireBaseStore.collection("films").where("user", "==", userId)
             .onSnapshot(function(querySnapshot) {
@@ -30,9 +48,12 @@ export default class databaseService {
             });
     }
 
-    static setFilmFavourite(filmId, state) {
-        fireBaseStore.collection("films").doc(filmId).update({
-            favourite: state,
+    static setFilmFavourite(film, userId, state) {
+        film.favourite[userId] = state;
+        let newFavourite = film.favourite;
+
+        fireBaseStore.collection("films").doc(film.id).update({
+            favourite: newFavourite,
         })
             .then(function() {
             })
