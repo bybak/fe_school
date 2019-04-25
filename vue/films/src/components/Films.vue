@@ -9,7 +9,7 @@
         <b-col cols="12" lg="4" class="pb-1 pt-1">
 
           <b-input-group size="sm" slot="append">
-            <b-form-select v-model="selected" :options="options" size="sm"></b-form-select>
+            <b-form-select v-model="selected" :options="options" size="sm" class="inputCustomColor"></b-form-select>
 
             <b-button slot="append" size="sm" @click="setOrderType('asc')" :pressed.sync="ascButtonPressed"><i class="fas fa-sort-amount-up"></i></b-button>
             <b-button slot="append" size="sm" @click="setOrderType('desc')" :pressed.sync="descButtonPressed"><i class="fas fa-sort-amount-down"></i></b-button>
@@ -22,8 +22,8 @@
             <b-col cols="11">
               <b-input-group size="sm">
 
-                <b-form-input :placeholder="searchType" v-model="searchString" v-if="isSearchString"/>
-                <b-form-select v-model="selectedGenres" :options="genres" v-if="!isSearchString" :select-size="1" @change="filterFilms()"></b-form-select>
+                <b-form-input class="inputCustomColor" :placeholder="searchType" v-model="searchString" v-if="isSearchString"/>
+                <b-form-select class="inputCustomColor" v-model="selectedGenres" :options="genres" v-if="!isSearchString" :select-size="1" @change="filterFilms()"></b-form-select>
 
                 <b-dropdown size="sm" text="Search type" slot="append" no-caret>
                   <template slot="button-content">
@@ -379,7 +379,18 @@ export default {
             this.bigCardView = false;
         },
         addFilm() {
-            this.$refs.addFilm.show();
+            let emptyFilmCard = {
+                poster: 'https://firebasestorage.googleapis.com/v0/b/films-2c182.appspot.com/o/posters%2Fposter_none.png?alt=media&token=94d71653-1616-4b6f-9f61-0558aa06f1ce',
+                title: '',
+                year: '',
+                text: '',
+                genre: [
+                    ''
+                ],
+                user: this.user.id,
+                id: null
+            };
+            this.$refs.addFilm.init(emptyFilmCard);
         },
         setOrderType(orderType) {
             this.orderType = orderType;
@@ -501,5 +512,15 @@ export default {
     }
     .small-genres {
         max-width: 90%;
+    }
+
+    .inputCustomColor {
+        background-color: #59616a;
+        color: white;
+        border-color: #59616a;
+    }
+
+    .inputCustomColor::placeholder {
+        color: white;
     }
 </style>

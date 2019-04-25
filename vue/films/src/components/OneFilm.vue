@@ -12,7 +12,8 @@
           <b-card-body>
             <div class="d-flex justify-content-between align-items-center">
               <h4 class="m-0">{{film.title}}</h4>
-              <b-button size="sm" variant="primary" v-b-tooltip.hover title="Copy to my collection" v-if="!myFilm" @click="copyFilm"><i class="fas fa-copy"></i></b-button>
+                <b-button size="sm" variant="primary" v-b-tooltip.hover title="Copy to my collection" v-if="!myFilm" @click="copyFilm"><i class="fas fa-copy"></i></b-button>
+                <b-button size="sm" v-if="myFilm" v-b-tooltip.hover title="Edit film" @click="editFilm"><i class="fas fa-pencil-alt"></i></b-button>
             </div>
             <b-card-text>
 
@@ -177,6 +178,8 @@
       </b-card-body>
     </b-card>
 
+      <add-film ref="addFilm"></add-film>
+
   </div>
 </template>
 
@@ -184,10 +187,12 @@
 import Star from 'vue-rate-it/glyphs/star';
 import databaseService from '../lib/databaseService';
 import dayjs from 'dayjs';
+import addFilm from './addFilm';
 
 export default {
     name: 'oneFilm',
     props: ['userId', 'id'],
+    components: {addFilm},
     created() {
 
         this.StarIcon = Star;
@@ -211,6 +216,11 @@ export default {
 
     },
     methods: {
+        editFilm() {
+            let film = this.film;
+            film.id = this.id;
+            this.$refs.addFilm.init(this.film);
+        },
         copyFilm() {
             databaseService.copyFilm(this.film, this.user);
         },
@@ -256,6 +266,11 @@ export default {
                 }
                 if (type === 'removed') {
                     app.commentsArray = app.$lodash.reject(app.commentsArray, function(el) { return el.id === oneComment.id; });
+                }
+                if (type === 'modified') {
+                    app.commentsArray = app.$lodash.map(app.commentsArray, function(a) {
+                        return a.id === oneComment.id ? oneComment : a;
+                    });
                 }
             });
 
