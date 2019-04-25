@@ -6,7 +6,7 @@
             content-class="bg-dark text-light"
             hide-footer
             hide-header
-]           size="lg"
+            size="lg"
     >
         <b-form-row>
             <b-col lg="3">
