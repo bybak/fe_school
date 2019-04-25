@@ -30,7 +30,7 @@ import profile from './components/Profile.vue';
 const routes = [
     { path: '/', name: 'welcome', component: welcome },
     { path: '/films/:id', name: 'films', component: films, props: true},
-    { path: '/films/film/:id', name: 'film', component: oneFilm, props: true },
+    { path: '/films/:userId/film/:id', name: 'film', component: oneFilm, props: true },
     { path: '/profile', component: profile }
 ];
 

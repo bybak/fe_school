@@ -23,6 +23,25 @@ export default class databaseService {
             });
     }
 
+    // Copy film to user
+    static copyFilm(film, user) {
+        const filmsRef = fireBaseStore.collection("films");
+
+        film.favourite = {};
+        film.ratingArray = [];
+        film.user = user.id;
+        film.votedUsers = [];
+
+        return filmsRef.add(film)
+            .then(function(data) {
+                console.log("Film copied");
+                return data.id;
+            })
+            .catch(function(error) {
+                console.error("Error copy film: ", error);
+            });
+    }
+
     static getFilms(userId, callback) {
         fireBaseStore.collection("films").where("user", "==", userId)
             .onSnapshot(function(querySnapshot) {

@@ -2,7 +2,7 @@
   <div id="films">
 
     <h1 class="text-light" v-if="myCollection">My movie collection</h1>
-    <h1 class="text-light" v-else>Movie collection of User</h1>
+    <h1 class="text-light" v-else>Movie collection of {{collectionOwner.name}}</h1>
 
     <b-card no-body class="mb-2 p-3" id="toolbar" bg-variant="dark" text-variant="light">
       <b-form-row>
@@ -49,7 +49,7 @@
             <b-button @click="setTableMode()" :pressed.sync="tableView"><i class="fas fa-bars"></i></b-button>
           </b-button-group>
 
-          <b-button size="sm" class="ml-2" @click="addFilm"><i class="fas fa-plus"></i></b-button>
+          <b-button size="sm" class="ml-2" @click="addFilm" v-if="myCollection"><i class="fas fa-plus"></i></b-button>
 
         </b-col>
       </b-form-row>
@@ -198,8 +198,10 @@
         <div v-if="!filmsLoaded">
             LOADING
         </div>
-        <h1 class="pt-3 text-light" v-else>There are no films yet :(</h1>
+        <h3 class="pt-4 text-light" v-else>There are no films :(</h3>
     </div>
+
+      <add-film ref="addFilm"></add-film>
 
   </div>
 </template>
@@ -208,6 +210,7 @@
 import Star from 'vue-rate-it/glyphs/star';
 import databaseService from '../lib/databaseService';
 import Lodash from 'lodash';
+import addFilm from './addFilm';
 
 export default {
     name: 'films',
@@ -215,6 +218,7 @@ export default {
         this.StarIcon = Star
     },
     props: ['id'],
+    components: {addFilm},
     data() {
         return {
             paginate: ['filmsCards'],
@@ -241,7 +245,8 @@ export default {
             allFilms: {},
             genres: [],
             selectedGenres: '',
-            filmsLoaded: false
+            filmsLoaded: false,
+            collectionOwner: {}
         }
     },
     mounted() {
@@ -281,6 +286,9 @@ export default {
     },
     methods: {
         init() {
+
+            this.films = [];
+
             databaseService.getFilms(this.id, this.getFilms);
             databaseService.getGenres().then(data => {
                 this.genres =  data;
@@ -289,6 +297,10 @@ export default {
             this.user = this.$store.getters.getUser;
             if (this.user.id === this.id) {
                 this.myCollection = true;
+            } else {
+                databaseService.getUserById(this.id).then((data) => {
+                    this.collectionOwner = data;
+                });
             }
         },
         formatGenresForFilm(genres) {
@@ -356,7 +368,7 @@ export default {
             databaseService.setFilmRating(filmId, ratingArray, votedUsers);
         },
         goToFilm(id) {
-            this.$router.push({name: 'film', params: {id: id}});
+            this.$router.push({name: 'film', params: {userId: this.id, id: id}});
         },
         setBigCardMode() {
             this.bigCardView = true;
@@ -367,7 +379,7 @@ export default {
             this.bigCardView = false;
         },
         addFilm() {
-
+            this.$refs.addFilm.show();
         },
         setOrderType(orderType) {
             this.orderType = orderType;

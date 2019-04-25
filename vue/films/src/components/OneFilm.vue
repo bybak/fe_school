@@ -3,7 +3,7 @@
 
     <h1 class="text-light">Movie collection of User</h1>
 
-    <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light">
+    <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light" v-if="film">
       <b-row no-gutters>
         <b-col md="2">
           <img :src="film.poster" class="card-img" alt="Card image">
@@ -12,7 +12,7 @@
           <b-card-body>
             <div class="d-flex justify-content-between align-items-center">
               <h4 class="m-0">{{film.title}}</h4>
-              <b-button size="sm" variant="primary" v-b-tooltip.hover title="Copy to my collection"><i class="fas fa-copy"></i></b-button>
+              <b-button size="sm" variant="primary" v-b-tooltip.hover title="Copy to my collection" v-if="!myFilm" @click="copyFilm"><i class="fas fa-copy"></i></b-button>
             </div>
             <b-card-text>
 
@@ -32,7 +32,7 @@
                     <span class="font-weight-bold">Genre</span>
                   </b-col>
                   <b-col lg="10">
-                    <span>{{film.genre}}</span>
+                    <span>{{formatGenresForFilm(film.genre)}}</span>
                   </b-col>
                 </b-form-row>
 
@@ -82,6 +82,7 @@
                             text-class="custom-text"
                             :show-rating="false"
                             v-model="film.rating"
+                            :read-only="checkForUserRating(film)"
                     ></fa-rating>
 
                   </b-col>
@@ -186,7 +187,7 @@ import dayjs from 'dayjs';
 
 export default {
     name: 'oneFilm',
-    props: ['id'],
+    props: ['userId', 'id'],
     created() {
 
         this.StarIcon = Star;
@@ -199,8 +200,26 @@ export default {
     mounted() {
         this.user = this.$store.getters.getUser;
         databaseService.getDynamicComments(this.id, this.getDynamicComments);
+
+        if (this.user.id === this.userId) {
+            this.myFilm = true;
+        } else {
+            databaseService.getUserById(this.userId).then((data) => {
+                this.filmOwner = data;
+            });
+        }
+
     },
     methods: {
+        copyFilm() {
+            databaseService.copyFilm(this.film, this.user);
+        },
+        checkForUserRating(film) {
+            return film.votedUsers.includes(this.user.id);
+        },
+        formatGenresForFilm(genres) {
+            return genres.join(' | ');
+        },
         checkLikeForUser(commentObject) {
             return commentObject.like.includes(this.user.id) || commentObject.dislike.includes(this.user.id);
         },
@@ -252,8 +271,9 @@ export default {
             film: '',
             comment: '',
             commentsArray: [],
-            userId: {},
-            paginate: ['comments']
+            paginate: ['comments'],
+            myFilm: false,
+            filmOwner: {}
         }
     }
 }
