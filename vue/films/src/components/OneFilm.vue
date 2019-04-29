@@ -1,7 +1,8 @@
 <template>
   <div id="oneFilm">
 
-    <h1 class="text-light">Movie collection of User</h1>
+    <h1 class="text-light" v-if="myFilm">My film</h1>
+    <h1 class="text-light" v-if="!myFilm">{{filmOwner.name}}'s film</h1>
 
     <b-card no-body class="overflow-hidden" bg-variant="dark" text-variant="light" v-if="film">
       <b-row no-gutters>
@@ -13,7 +14,10 @@
             <div class="d-flex justify-content-between align-items-center">
               <h4 class="m-0">{{film.title}}</h4>
                 <b-button size="sm" variant="primary" v-b-tooltip.hover title="Copy to my collection" v-if="!myFilm" @click="copyFilm"><i class="fas fa-copy"></i></b-button>
-                <b-button size="sm" v-if="myFilm" v-b-tooltip.hover title="Edit film" @click="editFilm"><i class="fas fa-pencil-alt"></i></b-button>
+                <div v-if="myFilm">
+                    <b-button size="sm" v-b-tooltip.hover title="Edit film" @click="editFilm"><i class="fas fa-pencil-alt"></i></b-button>
+                    <b-button class="ml-1" size="sm" variant="danger" v-b-tooltip.hover title="Delete film" @click="deleteFilm"><i class="fas fa-times" style="padding-left: 2px;padding-right: 2px;"></i></b-button>
+                </div>
             </div>
             <b-card-text>
 
@@ -74,23 +78,21 @@
                 <b-form-row>
                   <b-col lg="6" cols="6">
 
-                    <fa-rating
-                            :item-size="25"
-                            :glyph="StarIcon"
-                            inactive-color="#59616a"
-                            active-color="#F6F7F9"
-                            :border-width="0"
-                            text-class="custom-text"
-                            :show-rating="false"
-                            v-model="film.rating"
-                            :read-only="checkForUserRating(film)"
-                    ></fa-rating>
+                      <fa-rating
+                              :item-size="25"
+                              :glyph="StarIcon"
+                              inactive-color="#59616a"
+                              active-color="#F6F7F9"
+                              :border-width="0"
+                              text-class="custom-text"
+                              :show-rating="false"
+                              v-model="film.rating"
+                              @rating-selected="setRating(film.rating, id)"
+                              :read-only="checkForUserRating(film)"
+                      ></fa-rating>
 
                   </b-col>
-                  <b-col lg="6" cols="6">
-                    <div>Site rating:</div>
-                    <div>5.0</div>
-                  </b-col>
+
                 </b-form-row>
               </b-col>
 
@@ -196,10 +198,7 @@ export default {
     created() {
 
         this.StarIcon = Star;
-
-        databaseService.getOneFilm(this.id).then(data => {
-            this.film = data;
-        });
+        databaseService.getOneFilm(this.id, this.getFilm);
 
     },
     mounted() {
@@ -216,16 +215,34 @@ export default {
 
     },
     methods: {
+        getFilm(film) {
+            this.film = film;
+        },
         editFilm() {
             let film = this.film;
             film.id = this.id;
             this.$refs.addFilm.init(this.film);
+        },
+        deleteFilm() {
+            this.$router.push({name: 'films', params: {id: this.userId}});
+            databaseService.deleteFilm(this.id);
         },
         copyFilm() {
             databaseService.copyFilm(this.film, this.user);
         },
         checkForUserRating(film) {
             return film.votedUsers.includes(this.user.id);
+        },
+        setRating(rating, filmId) {
+            const film = this.film;
+
+            const ratingArray = film.ratingArray;
+            const votedUsers = film.votedUsers;
+
+            ratingArray.push(rating);
+            votedUsers.push(this.user.id);
+
+            databaseService.setFilmRating(filmId, ratingArray, votedUsers);
         },
         formatGenresForFilm(genres) {
             return genres.join(' | ');

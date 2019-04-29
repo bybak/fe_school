@@ -2,7 +2,7 @@
   <div id="films">
 
     <h1 class="text-light" v-if="myCollection">My movie collection</h1>
-    <h1 class="text-light" v-else>Movie collection of {{collectionOwner.name}}</h1>
+    <h1 class="text-light" v-else>{{collectionOwner.name}}'s movie collection</h1>
 
     <b-card no-body class="mb-2 p-3" id="toolbar" bg-variant="dark" text-variant="light">
       <b-form-row>
@@ -76,8 +76,7 @@
                           @click="goToFilm(film.id)"
                   >
                     <div>
-                      <div class="rounded" style='padding-top: 150%; background-color: #313a43;background-size:100% 100%;' :style="{'background-image': 'url(' + film.poster + ')'}">
-                      </div>
+                      <div class="rounded" style='padding-top: 150%; background-color: #313a43;background-size:100% 100%;' :style="{'background-image': 'url(' + film.poster + ')'}"></div>
                     </div>
                     <b-card-text class="m-2">
                       <div class="d-flex justify-content-between align-items-center">
@@ -407,6 +406,7 @@ export default {
         },
         setSearchType(searchType) {
             this.searchType = searchType;
+            this.filterFilms();
         },
         sortFilms() {
             this.films = this.$lodash.orderBy(this.films, [this.selected], [this.orderType]);

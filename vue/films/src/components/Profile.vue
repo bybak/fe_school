@@ -13,9 +13,6 @@
                 <b-button size="sm" v-if="editMode" v-b-tooltip.hover title="Change avatar" @click="$refs.file.click()">
                     <i class="fas fa-pencil-alt"></i>
                 </b-button>
-                <b-button size="sm" v-if="editMode" v-b-tooltip.hover title="Apply" class="ml-1" @click="changeAvatar">
-                    <i class="fas fa-check"></i>
-                </b-button>
             </div>
             <input type="file" class="fileInput" ref="file" @change="refreshAvatarOnPage">
 
@@ -44,7 +41,7 @@
 				  </b-col>
 				  <b-col lg="9" cols="9">
 					<div>Comments:</div>
-					<div>137</div>
+					<div>{{commentsCount}}</div>
 				  </b-col>
 				</b-form-row>
 			  </b-col>
@@ -56,7 +53,7 @@
 				  </b-col>
 				  <b-col lg="9" cols="9">
 					<div>Films:</div>
-					<div>5</div>
+					<div>{{filmsCount}}</div>
 				  </b-col>
 				</b-form-row>
 			  </b-col>
@@ -66,9 +63,9 @@
 				  <b-col lg="3" cols="3">
 					<i class="fas fa-users fa-3x"></i>
 				  </b-col>
-				  <b-col lg="9" cols="9">
+				  <b-col lg="9" cols="9" class="pl-3">
 					<div>Friends:</div>
-					<div>71</div>
+					<div>{{friendsCount}}</div>
 				  </b-col>
 				</b-form-row>
 			  </b-col>
@@ -228,7 +225,9 @@ export default {
             avatarFile: '',
             maxProgress: 100,
             counterProgress: 0,
-            imageUploading: false
+            imageUploading: false,
+            filmsCount: '',
+            commentsCount: ''
 		}
 	},
 	computed: {
@@ -247,11 +246,29 @@ export default {
 
 		databaseService.getFriendsForUser(this.user.id, this.getFriends);
 		databaseService.getRequests(this.user.id, this.getRequests);
+		databaseService.getUserFilmsCount(this.user.id, this.setUserFilmsCount);
+		databaseService.getUserCommentsCount(this.user.id, this.setUserCommentsCount);
 
 	},
 	methods: {
         toggleEditMode() {
+            if (this.editMode) {
+                this.changeAvatar();
+                this.updateUser();
+            }
             this.editMode = !this.editMode;
+        },
+        setUserFilmsCount(count) {
+            this.filmsCount = count;
+        },
+        setUserCommentsCount(count) {
+            this.commentsCount = count;
+        },
+        updateUser() {
+            if (this.user.name !== this.userName) {
+                this.user.name = this.userName;
+                databaseService.updateUser(this.user);
+            }
         },
         declineFriend(friendId) {
             databaseService.deleteFriendRequest(this.user.id, friendId);
@@ -264,6 +281,7 @@ export default {
         },
 	    sendRequest() {
             databaseService.sendRequest(this.user.id, this.requestUserId);
+            this.requestUserId = '';
         },
 		getRequests(requests) {
 			this.requests = requests;
@@ -298,54 +316,37 @@ export default {
             };
             reader.readAsDataURL(files[0]);
         },
-		changeAvatar(event) {
-            this.imageUploading = true;
+		changeAvatar() {
 			let file = this.avatarFile;
 
-			let newImageName = this.generateToken();
-			let ext = '';
+			if (file) {
+                this.imageUploading = true;
+                let newImageName = databaseService.generateToken();
+                let ext = '';
 
-			if (file.type === 'image/jpeg') {
-				ext = '.jpg';
-			}
-			else {
-				ext = '.jpg';
-			}
-			newImageName = newImageName + ext;
+                if (file.type === 'image/jpeg') {
+                    ext = '.jpg';
+                }
+                else {
+                    ext = '.jpg';
+                }
+                newImageName = newImageName + ext;
 
-			let app = this;
-			const StorageRef = this.$firebase.storage().ref().child('avatars/' + newImageName).put(file);
-            StorageRef.on('state_changed', function(snapshot){
-                app.counterProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            }, function(error) {
-            }, function() {
-                app.$firebase.storage().ref().child('avatars/' + newImageName).getDownloadURL().then(function(downloadURL) {
-                    databaseService.updateUserAvatar(app.user.id, downloadURL);
-                    setTimeout(function () {
-                        app.imageUploading = false;
-                    }, 1000);
+                let app = this;
+                const StorageRef = this.$firebase.storage().ref().child('avatars/' + newImageName).put(file);
+                StorageRef.on('state_changed', function (snapshot) {
+                    app.counterProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                }, function (error) {
+                }, function () {
+                    app.$firebase.storage().ref().child('avatars/' + newImageName).getDownloadURL().then(function (downloadURL) {
+                        databaseService.updateUserAvatar(app.user.id, downloadURL);
+                        setTimeout(function () {
+                            app.imageUploading = false;
+                        }, 1000);
+                    });
                 });
-            });
-//			StorageRef.put(file).then(function(snapshot) {
-//
-//				app.$firebase.storage().ref().child('avatars/' + newImageName).getDownloadURL().then(function(url) {
-//
-//					databaseService.updateUserAvatar(app.user.id, url);
-//					console.log(snapshot);
-//					console.log('Uploaded a blob or file!');
-//
-//				});
-//
-//			});
+            }
 		},
-		generateToken() {
-			var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-			var token = '';
-			for(var i = 0; i < 15; i++) {
-				token += chars[Math.floor(Math.random() * chars.length)];
-			}
-			return token;
-		}
 	}
 }
 </script>

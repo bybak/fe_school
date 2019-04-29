@@ -37,7 +37,7 @@
           <b-form-input
                   id="login_password"
                   v-model="password"
-                  type="text"
+                  type="password"
                   placeholder="password"
                   aria-describedby="inputFormatterHelp"
 
@@ -69,7 +69,7 @@
           <b-form-input
                   id="register_password1"
                   v-model="password"
-                  type="text"
+                  type="password"
                   placeholder="password"
                   aria-describedby="inputFormatterHelp"
 
@@ -79,7 +79,7 @@
           <b-form-input
                   id="register_password2"
                   v-model="confirmPassword"
-                  type="text"
+                  type="password"
                   placeholder="confirm password"
                   aria-describedby="inputFormatterHelp"
 

@@ -4,6 +4,64 @@ import dayjs from 'dayjs';
 import {firebaseService} from '../fireBaseStore';
 
 export default class databaseService {
+    // Add film
+    static addFilm(film) {
+        const filmsRef = fireBaseStore.collection("films");
+        return filmsRef.add(film)
+            .then(function(data) {
+                console.log("Film added");
+                return data.id;
+            })
+            .catch(function(error) {
+                console.error("Error add film: ", error);
+            });
+    }
+
+    static updateFilm(film) {
+        fireBaseStore.collection("films").doc(film.id).update({
+            title: film.title,
+            year: film.year,
+            genre: film.genre,
+            text: film.text,
+            poster: film.poster
+        })
+            .then(function() {
+                console.log('Film updated!')
+            })
+            .catch(function(error) {
+                console.error("Error update film: ", error);
+            });
+    }
+
+    // Delete film
+    static deleteFilm(filmId) {
+        return fireBaseStore.collection("films").doc(filmId).delete().then(function() {
+            console.log("Film successfully deleted!");
+        }).catch(function(error) {
+            console.error("Error deleted film: ", error);
+        });
+    }
+
+    // Upload poster
+    static uploadPoster(imageName, imageFile) {
+        const StorageRef = firebaseService.storage().ref().child('posters/' + imageName);
+
+        return StorageRef.put(imageFile).then(function(snapshot) {
+            return firebaseService.storage().ref().child('posters/' + imageName).getDownloadURL().then(function(url) {
+                return url;
+            });
+        });
+    }
+
+    // Generate token name
+    static generateToken() {
+        var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var token = '';
+        for(var i = 0; i < 15; i++) {
+            token += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return token;
+    }
 
     // Get genres
     static getGenres() {
@@ -91,21 +149,21 @@ export default class databaseService {
             });
     }
 
-    static getOneFilm(filmId) {
+    static getOneFilm(filmId, callback) {
 
-        return fireBaseStore.collection("films").doc(filmId).get().then(function(doc) {
-            if (doc.exists) {
+        fireBaseStore.collection("films").doc(filmId)
+            .onSnapshot(function(doc) {
                 let film = doc.data();
 
-                film.rating = 0;
-                if (doc.data().ratingArray.length !== 0) {
-                    film.rating = Lodash.sum(doc.data().ratingArray) / doc.data().ratingArray.length;
-                }
+                if (film) {
+                    film.rating = 0;
+                    if (doc.data().ratingArray.length !== 0) {
+                        film.rating = Lodash.sum(doc.data().ratingArray) / doc.data().ratingArray.length;
+                    }
 
-                return film;
-            } else {
-            }
-        });
+                    callback(film);
+                }
+            });
 
     }
 
@@ -289,35 +347,61 @@ export default class databaseService {
     static sendRequest(userId, friendId) {
         const requestsRef = fireBaseStore.collection("requests");
 
-        const outRequest = {
-            userId: userId,
-            friendId: friendId,
-            type: 'out',
-            date: dayjs().format('DD/MM/YYYY')
-        };
+        if (friendId === '') {
+            console.log("FILL THE FRIEND ID");
+            return;
+        }
 
-        requestsRef.add(outRequest)
-            .then(function(data) {
-                console.log("Out request setted");
-            })
-            .catch(function(error) {
-                console.error("Error out request: ", error);
+        // check for existing request
+        fireBaseStore.collection("requests").where("userId", "==", userId).get().then(function(querySnapshot) {
+            let requestExists = false;
+            querySnapshot.forEach(function(doc) {
+                let docData = doc.data();
+
+                if (docData.friendId === friendId) {
+                    requestExists = true;
+                }
             });
 
-        const inRequest = {
-            userId: friendId,
-            friendId: userId,
-            type: 'in',
-            date: dayjs().format('DD/MM/YYYY')
-        };
+            return requestExists;
+        }).then(requestExists => {
 
-        requestsRef.add(inRequest)
-            .then(function(data) {
-                console.log("In request setted");
-            })
-            .catch(function(error) {
-                console.error("Error in request: ", error);
-            });
+            if (requestExists) {
+                console.log("REQUEST EXISTS");
+                return;
+            }
+
+            const outRequest = {
+                userId: userId,
+                friendId: friendId,
+                type: 'out',
+                date: dayjs().format('DD/MM/YYYY')
+            };
+
+            requestsRef.add(outRequest)
+                .then(function(data) {
+                    console.log("Out request setted");
+                })
+                .catch(function(error) {
+                    console.error("Error out request: ", error);
+                });
+
+            const inRequest = {
+                userId: friendId,
+                friendId: userId,
+                type: 'in',
+                date: dayjs().format('DD/MM/YYYY')
+            };
+
+            requestsRef.add(inRequest)
+                .then(function(data) {
+                    console.log("In request setted");
+                })
+                .catch(function(error) {
+                    console.error("Error in request: ", error);
+                });
+
+        });
 
     }
 
@@ -399,6 +483,32 @@ export default class databaseService {
                 });
             });
         });
+    }
+
+    static updateUser(user) {
+        fireBaseStore.collection("users").doc(user.id).update({
+            name: user.name,
+        })
+            .then(function() {
+                console.log('User updated!')
+            })
+            .catch(function(error) {
+                console.error("Error update user: ", error);
+            });
+    }
+
+    static getUserFilmsCount(userId, callback) {
+        fireBaseStore.collection("films").where("user", "==", userId)
+            .onSnapshot(function(querySnapshot) {
+                callback(querySnapshot.docs.length);
+            });
+    }
+
+    static getUserCommentsCount(userId, callback) {
+        fireBaseStore.collection("comments").where("userId", "==", userId)
+            .onSnapshot(function(querySnapshot) {
+                callback(querySnapshot.docs.length);
+            });
     }
 
 }

@@ -26,7 +26,8 @@
                     <h3 v-else>Update film</h3>
                     <div>
                         <b-button variant="secondary" size="sm" @click="hide">Cancel</b-button>
-                        <b-button variant="primary" size="sm" class="ml-2" @click="save">Save</b-button>
+                        <b-button v-if="!id" variant="primary" size="sm" class="ml-2" @click="save">Save</b-button>
+                        <b-button v-if="id" variant="primary" size="sm" class="ml-2" @click="save">Update</b-button>
                     </div>
                 </div>
                 <hr class="m-0">
@@ -106,7 +107,9 @@ export default {
             title: '',
             year: '',
             text: '',
-            id: ''
+            id: '',
+            user: '',
+            posterFile: null,
         }
     },
     mounted() {
@@ -127,10 +130,69 @@ export default {
             reader.onload = (e) => {
                 app.poster = e.target.result;
             };
+
+            this.posterFile = files[0];
+
             reader.readAsDataURL(files[0]);
         },
         save() {
+            let genreArrayForFilm = [];
+            this.genresArray.forEach(function (oneGenre) {
+                if (oneGenre.selected !== '') {
+                    genreArrayForFilm.push(oneGenre.selected);
+                }
+            });
 
+            let film = {
+                favourite: {},
+                genre: genreArrayForFilm,
+                poster: this.poster,
+                ratingArray: [],
+                text: this.text,
+                title: this.title,
+                user: this.user,
+                votedUsers: [],
+                year: this.year
+            };
+
+            if (this.posterFile) {
+                this.uploadPoster().then(imageUrl => {
+                    film.poster = imageUrl;
+                    if (!this.id) {
+                        // save
+                        databaseService.addFilm(film);
+                    } else {
+                        // update
+                        film.id = this.id;
+                        databaseService.updateFilm(film);
+                    }
+                    this.hide();
+                });
+            } else {
+                if (!this.id) {
+                    // save
+                    databaseService.addFilm(film);
+                } else {
+                    // update
+                    film.id = this.id;
+                    databaseService.updateFilm(film);
+                }
+                this.hide();
+            }
+        },
+        uploadPoster() {
+            let newImageName = databaseService.generateToken();
+            let ext = '';
+
+            if (this.posterFile.type === 'image/jpeg') {
+                ext = '.jpg';
+            }
+            else {
+                ext = '.jpg';
+            }
+            newImageName = newImageName + ext;
+
+            return databaseService.uploadPoster(newImageName, this.posterFile);
         },
         init(film) {
             this.genresArray = [];
