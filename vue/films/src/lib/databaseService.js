@@ -260,6 +260,66 @@ export default class databaseService {
             });
     }
 
+    // Get user's requests
+    static getRequests(userId, callback) {
+        const app = this;
+
+        return fireBaseStore.collection("requests").where("userId", "==", userId)
+            .onSnapshot(function(querySnapshot) {
+                let requests = [];
+                let changeType = '';
+
+                querySnapshot.docChanges().forEach(function(change) {
+                    changeType = change.type;
+                    let request = change.doc.data();
+                    request.id = change.doc.id;
+                    requests.push(request);
+                });
+
+                new Promise(function(resolve, reject) {
+                    requests.forEach(function (oneRequest, index) {
+                        oneRequest.user = app.getUserById(oneRequest.friendId).then((data) => {
+                            requests[index].user = data;
+                        });
+                    });
+
+                    resolve(requests);
+                }).then((data) => {
+                    callback(data, changeType);
+                });
+            });
+    }
+
+    // Get user's friends
+    static getFriendsForUser(userId, callback) {
+        const app = this;
+
+        return fireBaseStore.collection("friends").where("userId", "==", userId)
+            .onSnapshot(function(querySnapshot) {
+                let friends = [];
+                let changeType = '';
+
+                querySnapshot.docChanges().forEach(function(change) {
+                    changeType = change.type;
+                    let friend = change.doc.data();
+                    friend.id = change.doc.id;
+                    friends.push(friend);
+                });
+
+                new Promise(function(resolve, reject) {
+                    friends.forEach(function (oneFriend, index) {
+                        oneFriend.user = app.getUserById(oneFriend.friendId).then((data) => {
+                            friends[index].user = data;
+                        });
+                    });
+
+                    resolve(friends);
+                }).then((data) => {
+                    callback(data, changeType);
+                });
+            });
+    }
+
     // Delete comment
     static deleteComment(commentId) {
         fireBaseStore.collection("comments").doc(commentId).delete().then(function() {
@@ -300,46 +360,6 @@ export default class databaseService {
             })
             .catch(function(error) {
                 console.error("Error writing document: ", error);
-            });
-    }
-
-    // Get user's friends
-    static getFriendsForUser(userId, callback) {
-        const app = this;
-
-        return fireBaseStore.collection("friends").where("userId", "==", userId)
-            .onSnapshot(function(querySnapshot) {
-                let friends = [];
-
-                querySnapshot.forEach(function(doc) {
-                    let friend = doc.data();
-                    app.getUserById(doc.data().friendId).then((data) => {
-                        friend.user = data;
-                        friends.push(friend);
-                    });
-                });
-
-                callback(friends);
-            });
-    }
-
-    // Get user's requests
-    static getRequests(userId, callback) {
-        const app = this;
-
-        return fireBaseStore.collection("requests").where("userId", "==", userId)
-            .onSnapshot(function(querySnapshot) {
-                let requests = [];
-
-                querySnapshot.forEach(function(doc) {
-                    let request = doc.data();
-                    app.getUserById(request.friendId).then((data) => {
-                        request.user = data;
-                        requests.push(request);
-                    });
-                });
-
-                callback(requests);
             });
     }
 

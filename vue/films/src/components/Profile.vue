@@ -96,7 +96,10 @@
 				  <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm">
 					<b-form-row>
 					  <b-col lg="3" cols="3">
-						<img class="rounded" :src="friend.user.avatar" alt="Card image" style="border-radius: 3px; max-height: 100%; max-width: 100%">
+						<img v-if="friend.user.avatar" class="rounded" :src="friend.user.avatar" alt="Card image" style="border-radius: 3px; max-height: 100%; max-width: 100%">
+                          <div v-else class="rounded d-flex justify-content-center align-items-center emptyAvatar">
+                              <b-spinner variant="light"></b-spinner>
+                          </div>
 					  </b-col>
 					  <b-col lg="9" cols="9" class="p-2">
 						<div class="d-flex justify-content-between align-items-center">
@@ -124,7 +127,7 @@
 		  <div v-if="requestTab">
 
 			<h5>Requests</h5>
-			<b-form-row>
+			<b-form-row id="requestsHeader">
                 <b-col lg="9" cols="8">
                     <b-input-group size="sm" prepend="" class="mb-3">
                         <b-form-input v-model="requestUserId" placeholder="Send request. Input unique ID here"/>
@@ -137,22 +140,26 @@
                 <b-col lg="3" cols="4">
                     <div class="mb-3 text-right">
                         <b-button-group size="sm">
-                            <b-button class="border-dark" v-b-tooltip.hover title="Incoming"><i class="fas fa-sign-in-alt"></i></b-button>
-                            <b-button class="border-dark" v-b-tooltip.hover title="Requests"><i class="fas fa-sign-out-alt"></i></b-button>
+                            <b-button :pressed.sync="filterRequest.all" v-b-tooltip.hover title="All" @click="setRequestFilter('all')">All</b-button>
+                            <b-button :pressed.sync="filterRequest.in" v-b-tooltip.hover title="Incoming" @click="setRequestFilter('in')"><i class="fas fa-sign-in-alt"></i></b-button>
+                            <b-button :pressed.sync="filterRequest.out" v-b-tooltip.hover title="Outgoing" @click="setRequestFilter('out')"><i class="fas fa-sign-out-alt"></i></b-button>
                         </b-button-group>
                     </div>
                 </b-col>
 			</b-form-row>
 
             <b-form-row>
-                <b-col lg="6" v-for="request in requests">
+                <b-col lg="12" v-for="request in requests">
 
-                    <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm" v-if="request.type === 'in'">
+                    <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm" v-if="request.type === 'in' && (filterRequest.all || filterRequest.in)">
                         <b-form-row>
-                            <b-col lg="3" cols="3">
-                                <img class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; max-width: 100%">
+                            <b-col lg="2" cols="3">
+                                <img v-if="request.user.avatar" class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; max-width: 100%">
+                                <div v-else class="rounded d-flex justify-content-center align-items-center emptyAvatar">
+                                    <b-spinner variant="light"></b-spinner>
+                                </div>
                             </b-col>
-                            <b-col lg="9" cols="9" class="p-2">
+                            <b-col lg="10" cols="9" class="p-2">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <span class="font-weight-bold">{{request.user.name}}</span>
@@ -171,12 +178,15 @@
                         </b-form-row>
                     </b-card>
 
-                    <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm" v-if="request.type === 'out'">
+                    <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm" v-if="request.type === 'out' && (filterRequest.all || filterRequest.out)">
                         <b-form-row>
-                            <b-col lg="3" cols="3">
-                                <img class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; max-width: 100%">
+                            <b-col lg="2" cols="3">
+                                <img v-if="request.user.avatar" class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; max-width: 100%">
+                                <div v-else class="rounded d-flex justify-content-center align-items-center emptyAvatar">
+                                    <b-spinner variant="light"></b-spinner>
+                                </div>
                             </b-col>
-                            <b-col lg="9" cols="9" class="p-2">
+                            <b-col lg="10" cols="9" class="p-2">
                                 <div class="d-flex justify-content-between align-items-center mr-2">
                                     <div>
                                         <span class="font-weight-bold">{{request.user.name}}</span>
@@ -227,7 +237,12 @@ export default {
             counterProgress: 0,
             imageUploading: false,
             filmsCount: '',
-            commentsCount: ''
+            commentsCount: '',
+            filterRequest: {
+                all: true,
+                in: false,
+                out: false
+            }
 		}
 	},
 	computed: {
@@ -251,6 +266,14 @@ export default {
 
 	},
 	methods: {
+        setRequestFilter(type) {
+            this.filterRequest = {
+                all: false,
+                in: false,
+                out: false
+            };
+            this.filterRequest[type] = true;
+        },
         toggleEditMode() {
             if (this.editMode) {
                 this.changeAvatar();
@@ -283,11 +306,49 @@ export default {
             databaseService.sendRequest(this.user.id, this.requestUserId);
             this.requestUserId = '';
         },
-		getRequests(requests) {
-			this.requests = requests;
+		getRequests(requests, changeType) {
+            if (requests.length > 1) {
+                this.requests = requests;
+            }
+            else {
+                const app = this;
+                requests.forEach(function (oneRequest, index) {
+                    if (changeType === 'added') {
+                        app.requests.unshift(oneRequest);
+                    }
+                    if (changeType === 'removed') {
+                        app.requests = app.$lodash.reject(app.requests, function(el) { return el.id === oneRequest.id; });
+                    }
+                    if (changeType === 'modified') {
+                        app.requests = app.$lodash.map(app.requests, function(a) {
+                            return a.id === oneRequest.id ? oneRequest : a;
+                        });
+                    }
+
+                });
+            }
 		},
-		getFriends(friends) {
-			this.friends = friends;
+		getFriends(friends, changeType) {
+            if (friends.length > 1) {
+                this.friends = friends;
+            }
+            else {
+                const app = this;
+                friends.forEach(function (oneFriend, index) {
+                    if (changeType === 'added') {
+                        app.friends.unshift(oneFriend);
+                    }
+                    if (changeType === 'removed') {
+                        app.friends = app.$lodash.reject(app.friends, function(el) { return el.id === oneFriend.id; });
+                    }
+                    if (changeType === 'modified') {
+                        app.friends = app.$lodash.map(app.friends, function(a) {
+                            return a.id === oneFriend.id ? oneFriend : a;
+                        });
+                    }
+
+                });
+            }
 		},
 		goToUserCollection(friendId) {
 			this.$router.push({name: 'films', params: {id: friendId}});
@@ -339,6 +400,7 @@ export default {
                 }, function (error) {
                 }, function () {
                     app.$firebase.storage().ref().child('avatars/' + newImageName).getDownloadURL().then(function (downloadURL) {
+                        app.user.avatar = downloadURL;
                         databaseService.updateUserAvatar(app.user.id, downloadURL);
                         setTimeout(function () {
                             app.imageUploading = false;
@@ -370,5 +432,16 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
+    }
+
+    #requestsHeader .active {
+        background-color: #0b61fe !important;
+        color: #F6F7F9 !important;
+        border-color: #0b61fe !important;
+    }
+    .emptyAvatar {
+        width: 65px;
+        height: 90px;
+        background-color: #485563;
     }
 </style>

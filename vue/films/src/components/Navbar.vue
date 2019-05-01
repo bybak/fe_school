@@ -14,9 +14,8 @@
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">
-
-            <b-dropdown right no-caret size="sm" v-if="logged">
-              <template slot="button-content"><i class="fas fa-user"></i> {{user.name}}</template>
+            <b-dropdown variant="link" right no-caret size="sm" v-if="logged">
+                <template slot="button-content"><b-button size="sm" class="border-0 p-0 m-0"><img :src="user.avatar" class="rounded" height="29"> <span class="p-2" style="line-height: 29px;">{{user.name}}</span></b-button></template>
               <b-dropdown-item to="/profile">Profile</b-dropdown-item>
               <b-dropdown-item @click="logout();">Logout</b-dropdown-item>
             </b-dropdown>

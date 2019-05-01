@@ -257,6 +257,20 @@ export default {
             databaseService.deleteComment(commentId);
         },
         addComment() {
+
+            if (this.comment === '') {
+                this.$bvToast.toast(`Comment cannot be empty`, {
+                    title: 'Error',
+                    autoHideDelay: 5000,
+                    appendToast: true,
+                    variant: 'danger',
+                    toaster: 'b-toaster-bottom-right',
+                    solid: false
+                });
+
+                return false;
+            }
+
             let commentObject = {
                 filmId: this.id,
                 userId: this.user.id,
