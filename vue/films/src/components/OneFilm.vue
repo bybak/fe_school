@@ -211,6 +211,7 @@ export default {
             databaseService.deleteFilm(this.id);
         },
         copyFilm() {
+            this.$router.push({name: 'films', params: {id: this.user.id}});
             databaseService.copyFilm(this.film, this.user);
         },
         checkForUserRating(film) {
