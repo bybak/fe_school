@@ -52,10 +52,6 @@ export default {
         goToFilms() {
             const user = this.$store.getters.getUser;
 
-            console.log(123123123);
-            console.log(user);
-            console.log(user.id);
-
             this.$router.push({name: 'films', params: {id: user.id}});
         },
         openModal() {

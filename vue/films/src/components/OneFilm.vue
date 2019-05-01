@@ -21,62 +21,28 @@
             </div>
             <b-card-text>
 
-              <hr class="mt-2 mb-1">
-              <div>
-                <b-form-row>
-                  <b-col lg="2">
-                    <span class="font-weight-bold">Year</span>
-                  </b-col>
-                  <b-col lg="10">
-                    <span>{{film.year}}</span>
-                  </b-col>
-                </b-form-row>
+              <hr class="mt-2 mb-2">
+              <div class="d-flex justify-content-between">
+                  <div class="w-50">
+                        <b-form-row>
+                          <b-col lg="2">
+                            <span class="font-weight-bold">Year</span>
+                          </b-col>
+                          <b-col lg="10">
+                            <span>{{film.year}}</span>
+                          </b-col>
+                        </b-form-row>
 
-                <b-form-row>
-                  <b-col lg="2">
-                    <span class="font-weight-bold">Genre</span>
-                  </b-col>
-                  <b-col lg="10">
-                    <span>{{formatGenresForFilm(film.genre)}}</span>
-                  </b-col>
-                </b-form-row>
-
-              </div>
-            </b-card-text>
-
-            <b-card-text class="text-white-50">
-              {{film.text}}
-            </b-card-text>
-
-            <b-form-row class="text-white-50 mt-3 mb-0">
-
-              <b-col lg="4" cols="12">
-                <b-form-row>
-                  <b-col lg="3" cols="3">
-                    <i class="fas fa-film fa-3x"></i>
-                  </b-col>
-                  <b-col lg="9" cols="9">
-                    <div>Kinopoisk:</div>
-                    <div>8.6</div>
-                  </b-col>
-                </b-form-row>
-              </b-col>
-
-              <b-col lg="4" cols="12">
-                <b-form-row>
-                  <b-col lg="3" cols="3">
-                    <i class="fab fa-imdb fa-3x"></i>
-                  </b-col>
-                  <b-col lg="9" cols="9">
-                    <div>IMDb:</div>
-                    <div>8.5</div>
-                  </b-col>
-                </b-form-row>
-              </b-col>
-
-              <b-col lg="4" cols="12">
-                <b-form-row>
-                  <b-col lg="6" cols="6">
+                        <b-form-row>
+                          <b-col lg="2">
+                            <span class="font-weight-bold">Genre</span>
+                          </b-col>
+                          <b-col lg="10">
+                            <span>{{formatGenresForFilm(film.genre)}}</span>
+                          </b-col>
+                        </b-form-row>
+                  </div>
+                  <div class="text-right">
 
                       <fa-rating
                               :item-size="25"
@@ -91,6 +57,22 @@
                               :read-only="checkForUserRating(film)"
                       ></fa-rating>
                       Votes: {{film.votedUsers.length}}
+
+                  </div>
+              </div>
+            </b-card-text>
+
+            <b-card-text class="text-white-50">
+              {{film.text}}
+            </b-card-text>
+
+            <b-form-row class="text-white-50 mt-3 mb-0">
+
+              <b-col lg="4" cols="12">
+                <b-form-row>
+                  <b-col lg="6" cols="6">
+
+
 
                   </b-col>
 

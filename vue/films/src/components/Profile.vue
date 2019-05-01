@@ -40,7 +40,7 @@
 				  <b-col lg="3" cols="3">
 					<i class="fas fa-comment-alt fa-3x"></i>
 				  </b-col>
-				  <b-col lg="9" cols="9">
+				  <b-col lg="9" cols="9" class="pl-3">
 					<div>Comments:</div>
 					<div>{{commentsCount}}</div>
 				  </b-col>
@@ -52,7 +52,7 @@
 				  <b-col lg="3" cols="3">
 					<i class="fas fa-film fa-3x"></i>
 				  </b-col>
-				  <b-col lg="9" cols="9">
+				  <b-col lg="9" cols="9" class="pl-3">
 					<div>Films:</div>
 					<div>{{filmsCount}}</div>
 				  </b-col>

@@ -9,9 +9,9 @@
             size="lg"
     >
         <b-form-row>
-            <b-col lg="3">
+            <b-col lg="3" class="pb-2">
                 <div class="posterContainer">
-                    <img class="rounded" :src="poster" alt="Card image" style="border-radius: 3px; max-width: 100%">
+                    <img class="rounded" :src="poster" alt="Card image" style="border-radius: 3px; width: 100%">
                     <div class="changePosterButton">
                         <b-button variant="primary" size="sm" v-b-tooltip.hover title="Change poster" @click="$refs.file.click()">
                             <i class="fas fa-pencil-alt"></i>
@@ -31,6 +31,19 @@
                     </div>
                 </div>
                 <hr class="m-0">
+                <b-row class="my-2" v-if="!id">
+                    <b-col lg="3" class="d-flex align-items-center">
+                        <label class="m-0" for="addFilmImdb">IMDB:</label>
+                    </b-col>
+                    <b-col lg="9">
+                        <b-input-group>
+                            <b-form-input v-model="imdbId" placeholder="IMDB id" class="input" size="sm" id="addFilmImdb" type="text"></b-form-input>
+                            <b-input-group-append>
+                                <b-button size="sm" class="input" variant="outline-secondary" @click="imdbSearch"><i class="fas fa-search"></i></b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                </b-row>
                 <b-row class="my-2">
                     <b-col lg="3" class="d-flex align-items-center">
                         <label class="m-0" for="addFilmTitle">Title:</label>
@@ -53,19 +66,19 @@
                     </b-col>
                     <b-col lg="9">
                         <b-row no-gutters v-for="(oneGenre, index) in genresArray">
-                            <b-col lg="11">
+                            <b-col lg="11" cols="11">
                                 <b-form-select v-model="oneGenre.selected" :options="oneGenre.genres" size="sm" class="input"></b-form-select>
                             </b-col>
-                            <b-col lg="1">
+                            <b-col lg="1" cols="1">
                                 <b-button block variant="outline-danger" size="sm" class="border border-dark" @click="removeFromGenreToList(index)"><i class="fas fa-minus"></i></b-button>
                             </b-col>
                         </b-row>
 
                         <div class="text-right">
                             <b-row no-gutters>
-                                <b-col lg="11">
+                                <b-col lg="11" cols="11">
                                 </b-col>
-                                <b-col lg="1">
+                                <b-col lg="1" cols="1">
                                     <b-button block variant="outline-primary" size="sm" class="border border-dark" @click="addGenreToList"><i class="fas fa-plus"></i></b-button>
                                 </b-col>
                             </b-row>
@@ -110,6 +123,7 @@ export default {
             id: '',
             user: '',
             posterFile: null,
+            imdbId: ''
         }
     },
     mounted() {
@@ -118,6 +132,27 @@ export default {
         });
     },
     methods: {
+        imdbSearch() {
+            databaseService.imdbSearch(this.imdbId).then(response => {
+                if (response.data.Response === 'True') {
+                    let data = response.data;
+                    this.title = data.Title;
+                    this.year = data.Year;
+                    this.text = data.Plot;
+
+                    let genres = data.Genre.split(",").map(item => item.trim());
+                    let genresArray = [];
+                    genres.forEach(oneGenre => {
+                        genresArray.push({selected: oneGenre, genres: genres});
+                    })
+                    this.genresArray = genresArray;
+                    this.poster = data.Poster;
+                } else {
+                    this.$dangerToast('Id not found');
+                    return false;
+                }
+            });
+        },
         changePoster(event) {
             var files = event.target.files || event.dataTransfer.files;
             if (!files.length)

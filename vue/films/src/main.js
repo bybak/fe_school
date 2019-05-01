@@ -10,6 +10,7 @@ import Lodash from 'lodash';
 import store from './vuexStore';
 import databaseService from './lib/databaseService';
 import VuePaginate from 'vue-paginate'
+import toast from './toasts';
 
 import VueRouter from 'vue-router'
 
@@ -49,17 +50,7 @@ Vue.prototype.$lodash = Lodash;
 
 let app = '';
 
-const dangerToast = (text) => {
-    (new Vue()).$bvToast.toast(text, {
-        title: 'Error',
-        autoHideDelay: 5000,
-        appendToast: true,
-        variant: 'danger',
-        toaster: 'b-toaster-bottom-right',
-        solid: false
-    });
-};
-Vue.prototype.$dangerToast = dangerToast;
+Vue.prototype.$dangerToast = toast;
 
 firebase.auth().onAuthStateChanged(() => {
     if (!app) {

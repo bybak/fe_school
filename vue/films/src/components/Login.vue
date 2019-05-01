@@ -2,17 +2,6 @@
 
     <div>
 
-      <b-alert
-              variant="danger"
-              dismissible
-              fade
-              :show="showDismissibleAlert"
-              @dismissed="showDismissibleAlert=0"
-              id = "login_register_alert"
-      >
-        {{alertMessage}}
-      </b-alert>
-
       <b-modal
               v-model="showModal"
               id="loginModal"
@@ -114,8 +103,6 @@
               password: '',
               name: '',
               confirmPassword: '',
-              showDismissibleAlert: 0,
-              alertMessage: ''
           }
       },
       mounted() {
@@ -124,7 +111,7 @@
       methods: {
           register() {
               if (this.password !== this.confirmPassword) {
-                  this.showAlert({code: '00', message: 'Passwords should be the same'});
+                  this.$dangerToast('Passwords should be the same');
                   return;
               }
 
@@ -143,8 +130,8 @@
 
                       app.hide();
                   },
-                  function (error) {
-                    app.showAlert(error);
+                  (error) => {
+                      this.$dangerToast(error.message);
                   }
               );
           },
@@ -159,16 +146,10 @@
                       });
 
                   },
-                  function (error) {
-                      app.showAlert(error);
+                  (error) => {
+                      this.$dangerToast(error.message);
                   }
               );
-          },
-          showAlert(error) {
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              this.alertMessage = '[' + errorCode + '] ' + errorMessage;
-              this.showDismissibleAlert = 3;
           },
           show() {
               this.showModal = true;

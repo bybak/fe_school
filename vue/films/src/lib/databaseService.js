@@ -2,8 +2,20 @@ import fireBaseStore from '../fireBaseStore';
 import Lodash from 'lodash';
 import dayjs from 'dayjs';
 import {firebaseService} from '../fireBaseStore';
+import axios from 'axios';
 
 export default class databaseService {
+
+    static imdbSearch(id) {
+        return axios.get('http://www.omdbapi.com/?i=' + id + '&apikey=98b6d243')
+            .then(function (response) {
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
     // Add film
     static addFilm(film) {
         const filmsRef = fireBaseStore.collection("films");

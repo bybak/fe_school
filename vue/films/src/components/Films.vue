@@ -19,7 +19,7 @@
 
         <b-col cols="12" lg="4" class="pb-1 pt-1">
           <b-form-row>
-            <b-col cols="11">
+            <b-col cols="12">
               <b-input-group size="sm">
 
                 <b-form-input class="inputCustomColor" :placeholder="searchType" v-model="searchString" v-if="isSearchString"/>
@@ -34,10 +34,9 @@
                   <b-dropdown-item @click="setSearchType('genre')">Genre</b-dropdown-item>
                 </b-dropdown>
 
+                  <b-button slot="append" size="sm" :pressed.sync="favouriteButtonPressed" @click="filterFilms()"><i class="fas fa-heart"></i></b-button>
+
               </b-input-group>
-            </b-col>
-            <b-col cols="1" class="text-right">
-              <b-button size="sm" :pressed.sync="favouriteButtonPressed" @click="filterFilms()"><i class="fas fa-heart"></i></b-button>
             </b-col>
           </b-form-row>
         </b-col>
