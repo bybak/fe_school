@@ -49,6 +49,18 @@ Vue.prototype.$lodash = Lodash;
 
 let app = '';
 
+const dangerToast = (text) => {
+    (new Vue()).$bvToast.toast(text, {
+        title: 'Error',
+        autoHideDelay: 5000,
+        appendToast: true,
+        variant: 'danger',
+        toaster: 'b-toaster-bottom-right',
+        solid: false
+    });
+};
+Vue.prototype.$dangerToast = dangerToast;
+
 firebase.auth().onAuthStateChanged(() => {
     if (!app) {
 

@@ -23,7 +23,8 @@
                 <h4 v-if="!editMode" class="m-0">{{this.user.name}}</h4>
                 <b-form-input v-else size="sm" v-model="userName" class="w-50" placeholder="Enter your name"></b-form-input>
 
-                <b-button size="sm" v-b-tooltip.hover title="Edit profile" @click="toggleEditMode"><i class="fas fa-pencil-alt"></i></b-button>
+                <b-button v-if="!editMode" size="sm" variant="primary" v-b-tooltip.hover title="Edit profile" @click="toggleEditMode"><i class="fas fa-pencil-alt"></i></b-button>
+                <b-button v-else size="sm" variant="primary" v-b-tooltip.hover title="Edit profile" @click="toggleEditMode">Save</b-button>
 			</div>
 			<b-card-text>
 			  <hr class="mt-2 mb-2">
@@ -303,6 +304,10 @@ export default {
             databaseService.acceptFriend(this.user.id, friendId);
         },
 	    sendRequest() {
+            if (this.requestUserId === '') {
+                this.$dangerToast('ID cannot be empty');
+                return false;
+            }
             databaseService.sendRequest(this.user.id, this.requestUserId);
             this.requestUserId = '';
         },

@@ -143,6 +143,28 @@ export default {
                 }
             });
 
+            let validForm = true;
+            if (this.title === '') {
+                this.$dangerToast('Title cannot be empty');
+                validForm = false;
+            }
+            if (this.year === '') {
+                this.$dangerToast('Year cannot be empty');
+                validForm = false;
+            }
+            if (this.text === '') {
+                this.$dangerToast('Text cannot be empty');
+                validForm = false;
+            }
+            if (genreArrayForFilm.length === 0) {
+                this.$dangerToast('Select at least one genre');
+                validForm = false;
+            }
+
+            if (!validForm) {
+                return false;
+            }
+
             let film = {
                 favourite: {},
                 genre: genreArrayForFilm,

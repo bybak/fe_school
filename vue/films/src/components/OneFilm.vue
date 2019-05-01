@@ -90,6 +90,7 @@
                               @rating-selected="setRating(film.rating, id)"
                               :read-only="checkForUserRating(film)"
                       ></fa-rating>
+                      Votes: {{film.votedUsers.length}}
 
                   </b-col>
 
@@ -259,15 +260,7 @@ export default {
         addComment() {
 
             if (this.comment === '') {
-                this.$bvToast.toast(`Comment cannot be empty`, {
-                    title: 'Error',
-                    autoHideDelay: 5000,
-                    appendToast: true,
-                    variant: 'danger',
-                    toaster: 'b-toaster-bottom-right',
-                    solid: false
-                });
-
+                this.$dangerToast('Comment cannot be empty');
                 return false;
             }
 

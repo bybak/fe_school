@@ -2,8 +2,9 @@
   <div id="app">
     <navbar></navbar>
     <b-container class="mt-5">
-      <router-view>
-      </router-view>
+        <transition name="fade" mode="out-in">
+            <router-view></router-view>
+        </transition>
     </b-container>
   </div>
 </template>
@@ -25,5 +26,11 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+    opacity: 0;
 }
 </style>
