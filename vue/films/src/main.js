@@ -39,10 +39,6 @@ const router = new VueRouter({
     routes
 });
 
-// router.beforeEach((to, from, next) => {
-//     next();
-// });
-
 Vue.prototype.$firebase = firebase;
 Vue.prototype.$db = firebase.database();
 Vue.prototype.$fireStore = firebase.firestore();

@@ -58,7 +58,7 @@ export default class databaseService {
     static uploadPoster(imageName, imageFile) {
         const StorageRef = firebaseService.storage().ref().child('posters/' + imageName);
 
-        return StorageRef.put(imageFile).then(function(snapshot) {
+        return StorageRef.put(imageFile).then(function() {
             return firebaseService.storage().ref().child('posters/' + imageName).getDownloadURL().then(function(url) {
                 return url;
             });
@@ -89,7 +89,7 @@ export default class databaseService {
 
                 return genres;
             })
-            .catch(function(error) {
+            .catch(function() {
             });
     }
 
@@ -146,7 +146,7 @@ export default class databaseService {
         })
             .then(function() {
             })
-            .catch(function(error) {
+            .catch(function() {
             });
     }
 
@@ -157,7 +157,7 @@ export default class databaseService {
         })
             .then(function() {
             })
-            .catch(function(error) {
+            .catch(function() {
             });
     }
 
@@ -201,7 +201,7 @@ export default class databaseService {
 
                 return comments;
             })
-            .catch(function(error) {
+            .catch(function() {
             });
     }
 
@@ -209,7 +209,6 @@ export default class databaseService {
         return fireBaseStore.collection("users").doc(userId).get().then(function(doc) {
             if (doc.exists) {
                 return doc.data();
-            } else {
             }
         })
     }
@@ -257,7 +256,7 @@ export default class databaseService {
                     comments.push(oneComment);
                 });
 
-                new Promise(function(resolve, reject) {
+                new Promise(function(resolve) {
                     comments.forEach(function (oneComment, index) {
                         oneComment.user = app.getUserById(oneComment.userId).then((data) => {
                             comments[index].user = data;
@@ -268,7 +267,7 @@ export default class databaseService {
                 }).then((data) => {
                     callback(data, changeType);
                 });
-                // callback(comments, changeType);
+
             });
     }
 
@@ -288,7 +287,7 @@ export default class databaseService {
                     requests.push(request);
                 });
 
-                new Promise(function(resolve, reject) {
+                new Promise(function(resolve) {
                     requests.forEach(function (oneRequest, index) {
                         oneRequest.user = app.getUserById(oneRequest.friendId).then((data) => {
                             requests[index].user = data;
@@ -318,7 +317,7 @@ export default class databaseService {
                     friends.push(friend);
                 });
 
-                new Promise(function(resolve, reject) {
+                new Promise(function(resolve) {
                     friends.forEach(function (oneFriend, index) {
                         oneFriend.user = app.getUserById(oneFriend.friendId).then((data) => {
                             friends[index].user = data;
@@ -411,7 +410,7 @@ export default class databaseService {
             };
 
             requestsRef.add(outRequest)
-                .then(function(data) {
+                .then(function() {
                     console.log("Out request setted");
                 })
                 .catch(function(error) {
@@ -426,7 +425,7 @@ export default class databaseService {
             };
 
             requestsRef.add(inRequest)
-                .then(function(data) {
+                .then(function() {
                     console.log("In request setted");
                 })
                 .catch(function(error) {
@@ -448,7 +447,7 @@ export default class databaseService {
         };
 
         friendsRef.add(setRecordForUser)
-            .then(function(data) {
+            .then(function() {
                 console.log("Friend added");
             })
             .catch(function(error) {
@@ -462,7 +461,7 @@ export default class databaseService {
         };
 
         friendsRef.add(setRecordForFriend)
-            .then(function(data) {
+            .then(function() {
                 console.log("User for Friend added");
             })
             .catch(function(error) {

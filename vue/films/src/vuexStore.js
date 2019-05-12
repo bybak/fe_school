@@ -1,7 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import firebase from 'firebase';
-import databaseService from './lib/databaseService'
 
 Vue.use(Vuex);
 
@@ -30,11 +28,8 @@ const store = new Vuex.Store({
         }
     },
     actions: {
-        setCurrentUser(context) {
-
-
+        setCurrentUser() {
         },
-
     }
 });
 

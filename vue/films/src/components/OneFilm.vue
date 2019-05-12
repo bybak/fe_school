@@ -266,8 +266,11 @@ export default {
                 return;
             }
 
+            console.log(comments);
+            console.log(type);
+
             const app = this;
-            comments.forEach(function (oneComment, index) {
+            comments.forEach(function (oneComment) {
                 if (type === 'added') {
                     app.commentsArray.unshift(oneComment);
                 }

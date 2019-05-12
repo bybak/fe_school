@@ -97,7 +97,7 @@
 				  <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm">
 					<b-form-row>
 					  <b-col lg="3" cols="3">
-						<img v-if="friend.user.avatar" class="rounded" :src="friend.user.avatar" alt="Card image" style="border-radius: 3px; max-height: 100%; max-width: 100%">
+						<img v-if="friend.user.avatar" class="rounded" :src="friend.user.avatar" alt="Card image" style="border-radius: 3px; height: 112px; max-width: 100%">
                           <div v-else class="rounded d-flex justify-content-center align-items-center emptyAvatar">
                               <b-spinner variant="light"></b-spinner>
                           </div>
@@ -155,7 +155,7 @@
                     <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm" v-if="request.type === 'in' && (filterRequest.all || filterRequest.in)">
                         <b-form-row>
                             <b-col lg="2" cols="3">
-                                <img v-if="request.user.avatar" class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; max-width: 100%">
+                                <img v-if="request.user.avatar" class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; width: 81px">
                                 <div v-else class="rounded d-flex justify-content-center align-items-center emptyAvatar">
                                     <b-spinner variant="light"></b-spinner>
                                 </div>
@@ -182,7 +182,7 @@
                     <b-card no-body bg-variant="dark" text-variant="light" class="mt-2 shadow-sm" v-if="request.type === 'out' && (filterRequest.all || filterRequest.out)">
                         <b-form-row>
                             <b-col lg="2" cols="3">
-                                <img v-if="request.user.avatar" class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; max-width: 100%">
+                                <img v-if="request.user.avatar" class="rounded" :src="request.user.avatar" alt="Card image" style="max-height: 120px; width: 81px">
                                 <div v-else class="rounded d-flex justify-content-center align-items-center emptyAvatar">
                                     <b-spinner variant="light"></b-spinner>
                                 </div>
@@ -317,7 +317,7 @@ export default {
             }
             else {
                 const app = this;
-                requests.forEach(function (oneRequest, index) {
+                requests.forEach(function (oneRequest) {
                     if (changeType === 'added') {
                         app.requests.unshift(oneRequest);
                     }
@@ -339,7 +339,7 @@ export default {
             }
             else {
                 const app = this;
-                friends.forEach(function (oneFriend, index) {
+                friends.forEach(function (oneFriend) {
                     if (changeType === 'added') {
                         app.friends.unshift(oneFriend);
                     }
@@ -402,7 +402,7 @@ export default {
                 const StorageRef = this.$firebase.storage().ref().child('avatars/' + newImageName).put(file);
                 StorageRef.on('state_changed', function (snapshot) {
                     app.counterProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                }, function (error) {
+                }, function () {
                 }, function () {
                     app.$firebase.storage().ref().child('avatars/' + newImageName).getDownloadURL().then(function (downloadURL) {
                         app.user.avatar = downloadURL;

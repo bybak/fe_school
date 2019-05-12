@@ -207,7 +207,6 @@
 <script>
 import Star from 'vue-rate-it/glyphs/star';
 import databaseService from '../lib/databaseService';
-import Lodash from 'lodash';
 import addFilm from './addFilm';
 
 export default {
@@ -311,7 +310,7 @@ export default {
             }
             else {
                 const app = this;
-                films.forEach(function (oneFilm, index) {
+                films.forEach(function (oneFilm) {
                     if (changeType === 'added') {
                         app.films.unshift(oneFilm);
                     }
@@ -342,7 +341,7 @@ export default {
         isHovered(id) {
             return this.hoveredCard === id;
         },
-        goToFilmFromTable(record, index) {
+        goToFilmFromTable(record) {
             this.goToFilm(record.id);
         },
         setToFavourite(film, currentState) {
